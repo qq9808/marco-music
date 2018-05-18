@@ -1,0 +1,65 @@
+@CHARSET "UTF-8";
+
+#history-div .tabs {
+	width: 100%;
+	max-width: 60rem;
+	margin: 0 auto 5rem;
+}
+
+#history-div input {
+	opacity: 0;
+}
+
+#history-div label {
+	cursor: pointer;
+	background: -webkit-linear-gradient(#666, #555);
+	color: #eee;
+	border-radius: 5px 5px 0 0;
+	padding: 1.5% 3%;
+	float: left;
+	margin-right: 2px;
+	font: italic 1em cambria;
+}
+
+#history-div label:hover {
+	background: -webkit-linear-gradient(#777, #666);
+}
+
+#history-div input:checked + label {
+	background: #fff;
+	color: #333;
+}
+
+#history-div .tabs input:nth-of-type(1):checked ~ .panels .panel:first-child,
+#history-div .tabs input:nth-of-type(2):checked ~ .panels .panel:nth-child(2),
+#history-div .tabs input:nth-of-type(3):checked ~ .panels .panel:nth-child(3),
+#history-div .tabs input:nth-of-type(4):checked ~ .panels .panel:last-child {
+	opacity: 1;
+	-webkit-transition: .3s;
+}
+
+#history-div .panels {
+	float: left;
+	clear: both;
+	position: relative;
+	width: 100%;
+	background: #fff;
+	border-radius: 0 10px 10px 10px;
+	min-height: 315px;
+	margin-bottom: 2.5rem;
+}
+
+#history-div .panel {
+	width: 100%;
+	opacity: 0;
+	position: absolute;
+	background: #fff;
+	border-radius: 0 10px 10px 10px;
+	padding: 4%;
+	box-sizing: border-box;
+}
+
+#history-div .panel h2 {
+	margin: 0;
+	font-family: Arial;
+}

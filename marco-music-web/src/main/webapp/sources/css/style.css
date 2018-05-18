@@ -1,0 +1,593 @@
+/*----------------------------  公共部分（开始）  ----------------------------*/
+.div-shade {
+	display: none;  
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	-webkit-box-orient: horizontal;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	background: rgba(0, 0, 0, 0.8); 
+}
+.div-shade.show {
+	display: -webkit-box !important;
+}
+.div-width {
+	width: 47% !important;
+}
+.hr-width {
+	width: 50% !important;
+}
+.x {
+	position: fixed;
+	top: 2rem;
+	right: 8rem;
+	font-size: 3.5rem;
+}
+#x:hover {
+	color: #6f7579 !important;
+}
+.cool {
+	background: url(../img/comment.png) no-repeat left center; 
+	display: inline-block;
+	padding-left: 1.2rem;
+	margin-left: 2rem;
+}
+.reply {
+	background: url(../img/comment.png) no-repeat left center; 
+	display: inline-block;
+	padding-left: 1.2rem;	
+}
+.span2-width {
+	width: 10% important;
+}
+.deliver {
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin:1% 40%;
+    cursor: pointer;
+    background-color: white; 
+    color: #6f7579;
+    width: 20%;
+    height: 2rem;
+    box-shadow: 2px 2px 5px #d3d6da;
+    border-radius: 0.3rem;
+}
+.deliver:hover {
+	background-color: #6f7579; 
+	color: white;
+}
+.table-style {
+	border-collapse: separate;   
+	border-spacing: 10px; 
+}
+.table-style input {
+	border-radius: 0.1rem;
+}
+.tr-style {
+	text-align: center;
+}
+.td-style1 {
+	text-align: center;
+}
+.td-style2 {
+	text-align: left;
+}
+.td-style3 {
+	width:50%; 
+	background-color: white;
+}
+.title-a {
+	text-align: center;
+}
+.button-style {
+	background-color: white; 
+    border: 2px solid #e1e1e1;
+    color: black;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    border-radius: 5%;
+    /* margin: 0.2rem 0.2rem; */
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; 
+    transition-duration: 0.4s;
+}
+.button-style:hover {
+	background-color: #72ACE3; 
+	border: 2px solid #72ACE3;
+}
+.right-div1 {
+    border: 1px solid #400000;
+    padding: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+    background-size:5rem 5rem;
+}
+.tx-style1 {
+	width: 2.5rem;
+	height: 2.5rem; 
+	overflow:hidden; 
+	border:0.05rem solid black;
+}
+.tx-style2 {
+	width: 2.5rem; 
+	height: 2.5rem; 
+	overflow:hidden;
+}
+.tx-style3 {
+	width: 5rem; 
+	height: 5rem;
+	overflow:hidden; 
+	border-radius:50%;
+	cursor: pointer;
+}
+.tx-style4 {
+	border:0.05rem solid black; 
+	height: 3.5rem; 
+	width: 3.5rem;
+}
+.tx-style5 {
+	height: 3.5rem; 
+	width: 3.5rem;
+}
+.font-color1 {
+	color: #6f7579;
+}
+.margin-top {
+	margin-top: 1.2rem;
+}
+.btn-style1 {
+	width: 90%; 
+	height: 100%; 
+	margin: auto;
+}
+.btn-style2 {
+	width: 90%; 
+	height: 100%; 
+	float:right
+}
+.text-center {
+	text-align: center;
+}
+.no-margin {
+	margin:0 0;
+}
+.some-padding {
+	padding: 0.2rem !important;
+}
+.background-color-gray {
+	background: #E8E8E8;
+}
+.font-weight {
+	font-weight: normal;
+}
+.article-style {
+	padding-top: 0.5rem; 
+	padding-bottom: 0.2rem !important;
+}
+.some-margin-top {
+	margin-top: -0.8rem;
+}
+.tip-style {
+  display: none; 
+  text-align: center;
+  color: white;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  height: 5rem;
+  width: 8rem;
+  /* line-height: 42px; */
+  background: #131517 center center no-repeat;
+  opacity: 0.8;
+  -moz-opacity: 0.8;
+  -webkit-opacity: 0.8;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -webkit-transition: all 0.25s ease-in-out;
+  -moz-transition: all 0.25s ease-in-out;
+  -o-transition: all 0.25s ease-in-out;
+}
+.tip-style.show {
+	display: block; 
+}
+.tip-style p {
+	margin: 1rem 0 0.5rem 0;
+}
+.tip-style a {
+	color: white;
+}
+.window-style {
+  display: none; 
+  text-align: center;
+  color: white;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+  height: 8rem;
+  width: 24rem;
+  background: #131517 center center no-repeat;
+  opacity: 0.8;
+  z-index: 9999;
+  -moz-opacity: 0.8;
+  -webkit-opacity: 0.8;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -webkit-transition: all 0.25s ease-in-out;
+  -moz-transition: all 0.25s ease-in-out;
+  -o-transition: all 0.25s ease-in-out;
+}
+.window-style .show {
+	display: block;  
+}
+.window-style p {
+	margin: 2rem 0 1.5rem 0;
+	font-size: 1.1rem;
+}
+.window-style button {
+	width: 8rem;
+	height: 1.8rem;
+	border-radius: 0.3rem;
+}
+.window-style button:hover {
+	background-color: #f0b70c;
+	border: 1px solid #f0b70c;
+}
+.title-nickname {
+	color: #6f7579;
+}
+.detail-default-tx {
+	width: 3.5rem; 
+	height: 3.5rem; 
+	overflow:hidden; 
+	border:0.05rem solid black;
+}
+.all-title-style {
+	font-family: "楷体";
+	font-weight: bolder;
+}
+/*----------------------------  公共部分（结束）  ----------------------------*/
+
+/*----------------------------  个人中心（开始）  ----------------------------*/
+.font-size1 {
+	font-size: 1.5rem;
+}
+#font-size2 {
+	font-size: 2rem;
+}
+.div-padding {
+	padding: 3% 0 0;
+}
+.default-tx-style {
+	width: 6rem; 
+	height: 6rem; 
+	border-radius: 50%; 
+	overflow: hidden;
+}
+.default-tx-style2 {
+	width: 6rem; 
+	height: 6rem; 
+	border-radius: 50%; 
+	overflow: hidden;
+	border: 0.05rem solid black;
+}
+.tx-style {
+	width: 6rem; 
+	height: 6rem; 
+	border-radius:50%; 
+	overflow:hidden;
+}
+.div-img {
+	background:#FFFFFF; 
+	width: 15rem; 
+	height: 15rem; 
+	margin: auto;	
+}
+.div-img:hover {
+	border:2px solid gray;
+	box-shadow: 0.5rem 0.5rem 0.5rem gray;
+}
+.sex-img {
+	width: 1rem; 
+	height: auto;
+	margin-bottom: 0.3rem;
+	overflow:hidden; 
+}
+.thank {
+	text-align: center; 
+	margin: 0 0 0.6rem;
+}
+.tab-show {
+	display: block;
+}
+.tab-close {
+	display: none;
+}
+.dt-num {
+	border-radius: 50%; 
+	height: 1.2rem; 
+	width: 1.2rem; 
+	display: inline-block; 
+	background: #eb1212; 
+	vertical-align: top;
+}
+.dt-num.hide {
+	display: none;  
+}
+.dt-num span {
+	display: block; 
+	color: #FFFFFF; 
+	height: 1.2rem; 
+	line-height: 1.2rem; 
+	text-align: center;
+	font-size: 0.8rem;
+}
+.button-style2:hover {
+	background-color: #72ACE3; 
+	border: 2px solid #72ACE3;
+}
+.ul-style li {
+	font-size: 1.2rem;
+	margin: 0.5rem auto;
+	list-style-type:none;
+}
+.ul-style a {
+	color: #818a90;
+	/* font-style: oblique; */
+	font-weight: normal;
+	font-family: STKaiti;
+}
+.div-center {
+	text-align: center;
+	display: -webkit-flex;  
+    -webkit-justify-content: center;  
+    -webkit-align-items: center;
+}
+.my-width {
+	text-decoration: none;
+	cursor: pointer;
+	border-radius: 3%;
+}
+.my-width.out-active {
+	border: 2px solid #e1e1e1;
+}
+.data-input {
+	width: 30rem !important;
+	height: 2rem !important;
+	margin-top: 0.4rem; 
+}
+.data-input2 {
+	width: 12rem !important;
+	height: 2rem !important;
+	margin-top: 0.4rem; 
+}
+.in-div {
+	display: none;
+}
+.in-div.in-active {
+	display: block;
+}
+.feedback-content {
+	display: none;
+}
+.feedback-content.feedback-show {
+	display: block;
+}
+.dt-content {
+	display: none;
+}
+.dt-content.dt-show {
+	display: block;
+}
+/*----------------------------  个人中心（结束）  ----------------------------*/
+
+/*----------------------------  论坛（开始）  ----------------------------*/
+.font-color2 {
+	color: white;
+}
+.input-box {
+	width: 50rem; 
+	margin: auto;
+}
+.input-box .input-title {
+	width: 50rem; 
+	height: 2rem; 
+	box-shadow: 2px 2px 5px #d3d6da;
+}
+.input-box .input-content {
+	width: 50rem; 
+	height: 20rem; 
+	margin: auto;
+}
+.title-input {
+	width: 50rem !important;
+	height: 2rem !important;
+	margin-top: 0.4rem; 
+}
+.content-input {
+	width: 50rem !important;
+	height: 20rem !important;
+}
+.forum-submit {
+	width:12rem;
+	height: 2rem; 
+	border-color: #f0b70c;
+	background-color: #f0b70c;
+	color: #fff;
+	margin: 0 1rem;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	background-image: linear-gradient(to bottom,#444,#222);
+	background-repeat: repeat-x;
+	cursor: pointer;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+	border: 1px solid #f0b70c;
+	border-radius: 0.3rem;
+}
+.forum-submit:hover {
+	text-decoration: none;
+	background-position: 0 -1rem;
+	background-color: #edc756;
+	transition: background-position .1s linear;
+}
+@media (max-width: 767px) {
+	.title-input {
+		width: 18rem !important;
+		height: 1.8rem !important;
+		margin-top: 0.4rem; 
+	}
+	.content-input {
+		width: 18rem !important;
+		height: 20rem !important;
+		margin-top: 0.4rem; 
+	}
+	.forum-submit {
+		width:5rem;
+		height: 2rem; 
+		border-color: #f0b70c;
+		background-color: #f0b70c;
+		color: #fff;
+		margin: 0 1rem;
+		text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+		background-image: linear-gradient(to bottom,#444,#222);
+		background-repeat: repeat-x;
+		cursor: pointer;
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+		border: 1px solid #f0b70c;
+		border-radius: 0.3rem;
+	}
+}
+.margin-auto {
+	margin: auto;
+}
+.submit-div {
+	margin-top: 1rem; 
+	text-align: center;
+}
+.submit-div2 {
+	margin-top: 1.5rem; 
+}
+.detail-tx-style1 {
+	width: 3.5rem; 
+	height: 3.5rem; 
+	overflow:hidden;
+}
+/*----------------------------  论坛（结束）  ----------------------------*/
+
+/*----------------------------  登录（开始）  ----------------------------*/
+.login-input {
+	width: 18rem !important;
+	height: 1.8rem !important;
+	margin-top: 0.4rem; 
+}
+.login-submit {
+	width:12rem;
+	height: 2rem; 
+	border-color: #f0b70c;
+	background-color: #f0b70c;
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	background-image: linear-gradient(to bottom,#444,#222);
+	background-repeat: repeat-x;
+	cursor: pointer;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+	border: 1px solid #f0b70c;
+	border-radius: 0.3rem;
+}
+.login-submit:hover {
+	text-decoration: none;
+	background-position: 0 -0.9rem;
+	background-color: #edc756;
+	transition: background-position .1s linear;
+}
+/*----------------------------  登录（结束）  ----------------------------*/
+
+/*----------------------------  右边（开始）  ----------------------------*/
+.tx-default {
+	width: 5rem; 
+	height: 5rem; 
+	overflow: hidden; 
+	border: 0.05rem solid black; 
+	border-radius: 50%;
+}
+.tx-border {
+	border: 0.05rem solid black;
+}
+.login-td1 {
+	width:50%; 
+	background-color: white; 
+	text-align: right; 
+	padding-right: 0.5rem;
+}
+.login-td2 {
+	width:50%; 
+	background-color: white; 
+	text-align: left; 
+	padding-left: 0.5rem;
+}
+.login-a {
+	color: #72ACE3; 
+	font-size: 1.2rem;
+}
+.welcome {
+	text-align: center; 
+	margin: 0 0;
+}
+.login-p {
+	text-align: center; 
+	margin: 0 0 0.6rem;
+}
+.right-usercenter {
+	width: 50%; 
+	background-color: white; 
+	text-align: right; 
+	padding-right: 0.5rem;
+}
+.right-quit {
+	width: 50%; 
+	background-color: white; 
+	text-align: left; 
+	padding-left: 0.5rem;
+}
+.nickname-style {
+	color: #72ACE3; 
+	font-size: 1.2rem; 
+	cursor: pointer;
+}
+/*----------------------------  右边（结束）  ----------------------------*/
+
+/*----------------------------  音乐厅（开始）  ----------------------------*/
+.singing-button1 {
+	width:12rem;
+	height: 3.5rem; 
+	border-color: #f0b70c;
+	background-color: #f0b70c;
+	color: #fff;
+	margin: 0 1rem;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	background-image: linear-gradient(to bottom,#444,#222);
+	background-repeat: repeat-x;
+	cursor: pointer;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+	border: 1px solid #f0b70c;
+	border-radius: 0.3rem;
+}
+.singing-button1:hover {
+	text-decoration: none;
+	background-position: 0 -1.75rem;
+	background-color: #edc756;
+	transition: background-position .1s linear;
+}
+/*----------------------------  音乐厅（结束）  ----------------------------*/

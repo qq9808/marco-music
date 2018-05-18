@@ -1,0 +1,34 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<div class="header-wrapper">
+	<header>
+		<div class="container">	
+		    <div class="logo-container">
+			    <a href="${baseURL}"  title="Knowledge Base Theme" style="font-size: 1.5rem;">现音中国</a> 
+			    <span class="tag-line">modernist music in China</span>
+		    </div>
+		    <nav class="main-nav">
+		    <div class="menu-top-menu-container">
+			    <ul id="menu-top-menu" class="clearfix">
+			        <li><a href="${baseURL }">首页</a></li>
+			        <li><a href="${baseURL}/singing/page">原创&翻唱</a></li>
+			        <li><a href="${baseURL}/teaching/page">教学</a></li>
+			        <li><a href="${baseURL}/news/page">资讯</a></li>
+			        <%-- <li><a href="${baseURL}/test/page">测评</a></li>	--%>
+			        <li><a href="${baseURL}/forum/page">论坛</a></li>				        
+			    </ul>
+		    </div>
+		    </nav>
+		</div>
+	</header>
+</div>
+
+<div class="search-area-wrapper">
+    <div class="search-area container">
+        <h3 class="search-header">Music didn't lie</h3>
+        <p class="search-tag-line">After silence， that which comes nearest to expressing the inexpressible is music.</p>	
+        <p class="search-tag-line">欢迎来到现音中国！</p>	
+    </div>
+</div>
+
+

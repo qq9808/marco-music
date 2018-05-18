@@ -1,0 +1,51 @@
+package com.marco.music.dao.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.criterion.Order;
+import org.springframework.stereotype.Repository;
+
+import com.marco.music.common.fatherDAO.FatherDAO;
+import com.marco.music.model.test.Test;
+
+/**
+ * @author Marco
+ * @date 2017年6月2日 下午2:31:52
+ * 测评DAO.
+ */
+@Repository
+public class TestDAO extends FatherDAO {
+
+	@Override
+	protected Class<?> getModelClass() {
+		return Test.class;
+	}
+	
+	public void save(Test test) {
+		super.save(test);
+	}
+	
+	public void update(Test test) {
+		super.update(test);
+	}
+	
+	public Test get(Integer id) {
+		return (Test)super.get(getModelClass(), id);
+	}
+
+	public void delete(Integer id) {
+		super.deleteById(getModelClass(), id);
+	}
+	
+	public int countTestByCondition(Test test) {
+		return super.count(test);
+	}
+	
+	public List<Test> searchTestByCondition(Test test, Integer startRow, Integer fetchSize) {
+		List<Order> orders = new ArrayList<Order>();
+		orders.add(Order.desc("createTime"));
+		return super.serach(test, orders, startRow, fetchSize);
+	}
+	
+}

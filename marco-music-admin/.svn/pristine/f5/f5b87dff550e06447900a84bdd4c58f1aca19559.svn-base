@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	<context:property-placeholder location="classpath:db.properties" />
+
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"> 
+		
+		<!-- 基础配置 -->
+		<property name="driverClassName" value="${driverClassName}" />
+        <property name="url" value="${url}" />  
+        <property name="username" value="${username}" />  
+        <property name="password" value="${password}" />  
+		  
+		<!-- 最大并发连接数 -->
+        <property name="maxActive" value="50" />
+         
+        <!-- 初始化连接数量 -->
+        <property name="initialSize" value="10" />
+         
+        <!-- 最小空闲连接数 -->
+        <property name="minIdle" value="10" />  
+         
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000" />
+         
+        <!-- 高并发使用非公平锁，增加效率 -->
+		<property name="useUnfairLock" value="true" />
+         		
+   		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+         
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="120000" />  
+         
+        <!-- 用来检测连接是否有效的sql -->
+        <property name="validationQuery" value="SELECT 'x' FROM DUAL" />  
+        <!-- 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效 -->
+        <property name="testWhileIdle" value="true" />  
+        <!-- 申请连接时执行validationQuery检测连接是否有效 -->
+        <property name="testOnBorrow" value="false" />  
+        <!-- 归还连接时执行validationQuery检测连接是否有效 -->
+        <property name="testOnReturn" value="false" />  
+         
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />	  	 
+	</bean>
+    
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />		
+		<property name="packagesToScan">
+			<list>
+				<value>com.marco.music.model.*</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="current_session_context_class">thread</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" /> 
+	
+	<!-- 定义事务处理类，不同的数据访问方式，事务处理类不同 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED"/> 
+			<tx:method name="insert*" propagation="REQUIRED"/> 
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 定义AOP配置 -->
+	<aop:config proxy-target-class="true">
+		<!-- 定义一个切入点 -->
+		<aop:pointcut id="services" expression="execution(* com.marco.music.service.*.*(..))" />
+		<!-- 对切入点和事务的通知，进行适配 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="services" />
+	</aop:config>
+	
+	<aop:aspectj-autoproxy />
+	
+</beans>

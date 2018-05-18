@@ -1,0 +1,78 @@
+package com.marco.music.dao.forum;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.criterion.Order;
+import org.springframework.stereotype.Repository;
+
+import com.marco.music.common.fatherDAO.FatherDAO;
+import com.marco.music.model.forum.Forum;
+
+/**
+ * @author Marco
+ * @date 2017年5月25日 上午8:58:50
+ * 论坛DAO.
+ */
+@Repository
+public class ForumDAO extends FatherDAO {
+
+	@Override
+	protected Class<?> getModelClass() {
+		return Forum.class;
+	}
+
+	public void save(Forum forum) {
+		super.save(forum);
+	}
+	
+	public void update(Forum forum) {
+		super.update(forum);
+	}
+	
+	public Forum get(Integer id) {
+		return (Forum)super.get(getModelClass(), id);
+	}
+	
+	public void delete(Integer id) {
+		super.deleteById(getModelClass(), id);
+	}
+	
+	public int countForumByCondition(Forum forum) {
+		return super.count(forum);
+	}
+	
+	public List<Forum> searchForumByCondition(Forum forum, Integer startRow, Integer fetchSize) {
+		List<Order> orders = new ArrayList<Order>();
+		orders.add(Order.desc("createTime"));
+		return super.serach(forum, orders, startRow, fetchSize);
+	}
+	
+	public List<Object[]> searchForumBySQL(Integer startRow, Integer fetchSize) {
+		
+		String sql = " SELECT a.id AS forumID,a.title,a.content,a.createtime,b.id,b.nickname,b.txImg,COUNT(c.id) AS replyNum FROM (article_forum a, user b) LEFT JOIN article_forum_reply c ON (c.forum_id = a.id) WHERE a.userid = b.id GROUP BY forumID ORDER BY a.createtime DESC ";		
+		List<Object> values = new ArrayList<Object>();		
+		List<Object[]> list = super.findListBySqlForPage(sql, values, startRow, fetchSize);		
+		return list;		
+	}
+	
+	public Object[] getForum(Integer id) {
+		
+		String sql = " SELECT a.id AS forumID,a.title,a.content,a.createtime,b.id,b.nickname,b.txImg FROM article_forum a LEFT JOIN user b ON (a.userid = b.id) WHERE a.id = ? ";		
+		List<Object> values = new ArrayList<Object>();	
+		values.add(id);
+		List<Object[]> list = super.findListBySql(sql, values);			
+		if(list != null) {
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public List<Forum> findForumByUserID(Integer id) {
+		String hql = " from Forum where userID = ? ";
+		List<Object> values = new ArrayList<Object>();		
+		values.add(id);
+		return super.findByHQL(hql, values); 
+	}
+	
+}

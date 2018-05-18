@@ -1,0 +1,63 @@
+package com.marco.music.service.singing;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.singing.SingingDAO;
+import com.marco.music.model.singing.Singing;
+
+/**
+ * @author Marco
+ * @date 2017年6月3日 上午1:33:09
+ * 原创&翻唱Service.
+ */
+@Service
+@Transactional
+public class SingingService {
+
+	@Autowired
+	private SingingDAO singingDAO;
+	
+	public void save(Singing singing) throws Exception {
+		singingDAO.save(singing);
+	}
+	
+	public void update(Singing singing) throws Exception {
+		singingDAO.update(singing);
+	}
+	
+	public Singing get(Integer id) throws Exception {
+		return singingDAO.get(id);
+	}
+	
+	public Object[] getSinging(Integer id) throws Exception {
+		return singingDAO.getSinging(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		singingDAO.delete(id);
+	}
+	
+	public int countSingingByCondition(Singing singing) throws Exception {
+		return singingDAO.countSingingByCondition(singing);
+	}
+	
+	public List<Singing> searchSingingByCondition(Singing singing, Integer startRow, Integer fetchSize) throws Exception {
+		return singingDAO.searchSingingByCondition(singing, startRow, fetchSize);
+	}
+	
+	public List<Object[]> searchSingingBySQL(Integer startRow, Integer fetchSize) throws Exception {
+		return singingDAO.searchSingingBySQL(startRow, fetchSize);
+	}
+	
+	public List<Singing> findSingingByUserID(Integer id) throws Exception {
+		return singingDAO.findSingingByUserID(id);
+	}
+	
+	public List<Object[]> getTenData() throws Exception {
+		return singingDAO.getTenData();
+	}
+}

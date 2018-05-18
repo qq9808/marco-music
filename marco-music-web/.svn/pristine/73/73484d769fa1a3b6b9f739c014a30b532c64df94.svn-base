@@ -1,0 +1,57 @@
+package com.marco.music.controller.homepage;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.marco.music.service.forum.ForumReplyService;
+import com.marco.music.service.news.NewsService;
+import com.marco.music.service.singing.SingingService;
+
+import net.sf.json.JSONObject;
+
+/**
+ * @author Marco
+ * @date 2017年7月9日 上午1:06:54
+ * 首页Controller
+ */
+@Controller
+public class HomepageController {
+
+	protected Logger logger = Logger.getLogger(getClass());
+	
+	@Autowired
+	private SingingService singingService;
+		
+	@Autowired
+	private NewsService newsService;
+	
+	@Autowired
+	private ForumReplyService forumReplyService;
+	
+	/**
+	 * 获取各个模块前十个记录
+	 */
+	@RequestMapping(value="/homepage/getData", produces="application/json; charset=utf-8")
+	@ResponseBody
+	public String getData(HttpServletRequest request, HttpServletResponse response) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		//获取原创&翻唱
+		List<Object[]> singingList = null;
+		
+		JSONObject jsonObject = JSONObject.fromObject(result);
+		return jsonObject.toString();
+	}
+	
+}

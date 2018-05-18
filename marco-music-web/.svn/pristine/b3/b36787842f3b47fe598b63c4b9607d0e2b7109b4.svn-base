@@ -1,0 +1,141 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>用户注册</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+            <div class="container">
+	            <div class="row">
+	                <div class="span8 page-content">	
+	                    <article class="type-page hentry clearfix">
+	                        <h1 class="post-title">
+	                           	<a href="javascript:void(0)">用户注册</a>
+	                        </h1>
+	                        <hr>
+	                        <p>欢迎注册，我们期待您的加入！</p>
+	                    </article>		
+	                    <form id="contact-form" class="row" action="#">	
+	                        
+	                        <!-- 账号 -->
+	                        <div class="span2">
+                            	<label for="name">账号<span>：</span></label>
+	                        </div>
+	                        <div class="span6">
+	                        	<input type="text" id="account" class="required input-xlarge" placeholder="账号为6~15位，由字母和数字组成" maxlength="15">
+	                        </div>
+							
+							<!-- 密码 -->
+	                        <div class="span2">
+                            	<label for="email">密码 <span>：</span></label>
+	                        </div>
+	                        <div class="span6">
+	                        	<input type="password" id="passwork" class="email required input-xlarge" placeholder="密码为6~20位，由字母和数字组成" maxlength="20">
+	                        </div>
+	
+							<!-- 重复密码 -->
+	                        <div class="span2">
+	                        	<label for="email">重复密码 <span>：</span></label>
+	                        </div>
+	                        <div class="span6">
+	                        	<input type="password" id="check_passwork" class="input-xlarge" placeholder="请重复输入您的密码" maxlength="20">
+	                        </div>	
+	                        
+	                        <!-- 昵称 -->
+	                        <div class="span2">
+                            	<label for="name">昵称<span>：</span></label>
+	                        </div>
+	                        <div class="span6">
+	                        	<input type="text" id="nickname" class="required input-xlarge" placeholder="昵称长度在1~15个字符之间" maxlength="15">
+	                        </div>	
+	                        
+	                        <!-- 立即注册 -->
+	                        <div class="span6 offset2 bm30">
+	                            <a href="javascript:void(0)"><input type="bottom" id="submit" value="立即注册" class="btn btn-inverse" onclick="register()"></a>
+	                        </div>	                        
+	                    </form>
+	                </div>
+	            </div>
+            </div>
+    </div>
+
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>  
+	
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>
+	<script type="text/javascript">	
+		
+		function register() {
+					   	
+			var account = $("#account").val();
+			var passwork = $("#passwork").val();
+			var checkPasswork = $("#check_passwork").val();
+			var nickname = $("#nickname").val();		
+			
+			if(account == ''){
+	        	alert("您忘记填写账户啦！");
+	        	return false;
+	        }
+			if(account.length < 6 || account.length > 15) {
+				alert("账户的长度在6~15之间哦！");
+	        	return false;
+			}
+			if(passwork == ''){
+	        	alert("您忘记填写密码啦！");
+	        	return false;
+	        }
+			if(passwork.length < 6 || passwork.length > 20) {
+				alert("密码的长度在6~20之间哦！");
+	        	return false;
+			}
+			if(passwork != checkPasswork){
+	        	alert("两次输入的密码不一致哦，麻烦您重新输入一遍！");
+	        	return false;
+	        }
+			if(nickname == ''){
+	        	alert("昵称也是要输入的哦！");
+	        	return false;
+	        }
+			if(nickname.length < 1 || nickname.length > 15) {
+				alert("昵称的长度在1~15之间哦！");
+	        	return false;
+			}
+			
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/register/save',
+	   			data : {account : account, passwork : passwork, nickname : nickname},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200){
+	   					alert('注册成功啦，欢迎加入现音中国！');  					
+	   					setTimeout(function(){
+	   				        window.location.href = "${returnURL }";
+	   				    },50);
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "register()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}	
+	</script>   
+</body>
+</html>

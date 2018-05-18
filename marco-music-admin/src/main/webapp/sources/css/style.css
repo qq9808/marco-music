@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+
+.mytable {border-collapse:collapse;border:none;}
+.mytable th{background: #eee; font-weight: bold; padding: 3px 0;}
+.mytable th, .mytable td{border: 1px solid #ddd; padding:3px 2px; font-size: 14px;word-break:break-all; word-wrap:break-word; text-align: center;}
+
+.paginator{clear:both; line-height:24px; padding:5px 0; color:#181818; font-weight:bold; text-align:center;}
+.paginator span{height:24px; line-height:24px;}
+.paginator a{display:inline-block; height:24px; line-height:24px; padding:0 8px; color:#999; text-decoration:none; vertical-align:middle; background-color:#fff; border:1px #999 solid;}
+.paginator a:hover{text-decoration:none; color:#fff; background-color:#181818; border:1px #181818 solid;}
+.paginator .this-page{display:inline-block; padding:0 10px; color:#fff; vertical-align:middle; background-color:#181818; border:1px #181818 solid;}
+
+.transparent {  
+      filter:alpha(opacity=50);  
+      -moz-opacity:0.5;  
+      -khtml-opacity: 0.5;  
+      opacity: 0.5;  
+}   

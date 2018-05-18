@@ -1,0 +1,209 @@
+package com.marco.music.controller.test;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.marco.music.common.code.CodeAndMsg;
+import com.marco.music.common.keyword.Keyword;
+import com.marco.music.common.page.Page;
+import com.marco.music.common.string.StringTool;
+import com.marco.music.model.test.Test;
+import com.marco.music.model.test.TestReply;
+import com.marco.music.model.user.User;
+import com.marco.music.service.test.TestReplyService;
+import com.marco.music.service.test.TestService;
+
+import net.sf.json.JSONObject;
+
+/**
+ * @author Marco
+ * @date 2017年6月2日 下午2:23:00
+ * 说明
+ */
+@Controller
+public class TestController {
+
+	protected Logger logger = Logger.getLogger(getClass());
+	
+	@Autowired
+	private TestService testService;
+	
+	@Autowired
+	private TestReplyService testReplyService;
+	
+	/**
+	 * 测评页面
+	 */
+	@RequestMapping("/test/page")
+	public String testPage(HttpServletRequest request, HttpServletResponse response,
+			Integer curPage) {
+		
+		try {
+			Page page = new Page();
+			
+			if(curPage != null) {
+				page.setCurPage(curPage);
+			}
+			page.setFetchSize(20);
+			
+			Test test = new Test();
+			int count = testService.countTestByCondition(test);
+			page.setAllRecordNum(count);
+			page.setTotalPage(page.getTotalPage());
+			Integer startRow = page.getStartRow();
+			
+			List<Test> list = testService.searchTestByCondition(test, startRow, page.getFetchSize());
+			
+			request.setAttribute("page", page);
+			request.setAttribute("list", list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开测评模块出错", e.fillInStackTrace());
+		}
+		
+		return "/test/test";
+	}
+	
+	/**
+	 * 保存测评
+	 */
+	@RequestMapping(value="/test/save", produces="application/json; charset=utf-8")
+	@ResponseBody
+	public String testSave(HttpServletRequest request, HttpServletResponse response,
+			String title, String content) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			Object UserObj = request.getSession().getAttribute(Keyword.USER);
+			
+			if(UserObj == null) {
+				result.put("state", CodeAndMsg.USER_NOT_EXIST);
+				result.put("msg", CodeAndMsg.USER_NOT_EXIST_MSG);
+				JSONObject jsonObject = JSONObject.fromObject(result);
+				return jsonObject.toString();
+			}
+			//这些参数不能为空
+			if(StringTool.isEmpty(title) || StringTool.isEmpty(content)) {
+				result.put("state", CodeAndMsg.PARAM_ERROR_CODE);
+				result.put("msg", CodeAndMsg.PARAM_ERROR_MSG);
+				JSONObject jsonObject = JSONObject.fromObject(result);
+				return jsonObject.toString();
+			}
+			
+			User user = (User)UserObj;
+			Test test = new Test();
+			
+			test.setTitle(title);
+			test.setContent(content);
+			test.setUserID(user.getId());
+			test.setNickname(user.getNickname());
+			test.setCreateTime(new Date());
+			
+			testService.save(test);
+			result.put("state", CodeAndMsg.SUCCESS_CODE);
+			result.put("msg", CodeAndMsg.SUCCESS_MSG);
+		} catch (Exception e) {
+			logger.error("保存测评帖子出错", e.fillInStackTrace());
+			result.put("state", CodeAndMsg.EXCEPTION_CODE);
+			result.put("msg", CodeAndMsg.EXCEPTION_MSG);
+		}
+		
+		JSONObject jsonObject = JSONObject.fromObject(result);
+		return jsonObject.toString();
+	}
+	
+	/**
+	 * 测评详情
+	 */
+	@RequestMapping("/test/detail")
+	public String testDetail(HttpServletRequest request, HttpServletResponse response,
+			Integer id, Integer curPage) {
+		
+		try {
+			
+			Test test = testService.get(id);
+			
+			//查找该帖子下面的回复
+			Page page = new Page();
+			if(curPage != null) {
+				page.setCurPage(curPage);
+			}
+			page.setFetchSize(999);
+			
+			TestReply testReply = new TestReply();
+			int count = testReplyService.countTestReplyByCondition(testReply);
+			page.setAllRecordNum(count);
+			page.setTotalPage(page.getTotalPage());
+			Integer startRow = page.getStartRow();
+			
+			List<Object[]> list = testReplyService.findTestReplyByIDForPage(id, startRow, page.getFetchSize());
+			
+			request.setAttribute("test", test);
+			request.setAttribute("list", list);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开测评帖子出错", e.fillInStackTrace());
+		}
+		
+		return "/test/test_detail";
+	}
+	
+	/**
+	 * 保存回复
+	 */
+	@RequestMapping(value="/test/reply/save", produces="application/json; charset=utf-8")
+	@ResponseBody
+	public String testReplySave(HttpServletRequest request, HttpServletResponse response,
+			Integer testID, String content, Integer level, Integer replyID) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			Object UserObj = request.getSession().getAttribute(Keyword.USER);
+			
+			if(UserObj == null) {
+				result.put("state", CodeAndMsg.USER_NOT_EXIST);
+				result.put("msg", CodeAndMsg.USER_NOT_EXIST_MSG);
+				JSONObject jsonObject = JSONObject.fromObject(result);
+				return jsonObject.toString();
+			}
+			
+			User user = (User)UserObj;
+			TestReply testReply = new TestReply();
+			
+			testReply.setTestID(testID);
+			testReply.setContent(content);
+			testReply.setLevel(level);
+			if(level != null && level == 2) {
+				testReply.setReplyID(replyID);
+			}
+			testReply.setUserID(user.getId());
+			testReply.setNickname(user.getNickname());
+			testReply.setCreateTime(new Date());
+			
+			testReplyService.save(testReply);
+			result.put("state", CodeAndMsg.SUCCESS_CODE);
+			result.put("msg", CodeAndMsg.SUCCESS_MSG);
+		} catch (Exception e) {
+			logger.error("保存测评回复出错", e.fillInStackTrace());
+			result.put("state", CodeAndMsg.EXCEPTION_CODE);
+			result.put("msg", CodeAndMsg.EXCEPTION_MSG);
+		}
+		
+		JSONObject jsonObject = JSONObject.fromObject(result);
+		return jsonObject.toString();
+	}
+	
+}

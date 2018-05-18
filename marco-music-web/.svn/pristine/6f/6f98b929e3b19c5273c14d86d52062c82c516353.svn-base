@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<aside class="span4 page-sidebar">	
+	<c:choose>
+		<c:when test="${empty user }">
+		    <section class="widget">
+		        <div class="right-div1">
+		            <p style="text-align: center;"><img id="touxiang" src="${baseURL}/sources/img/touxiang.png" style="width: 5rem;; height: 5rem;; overflow:hidden; border:0.05rem solid black; border-radius:50%;" /></p>
+		            <p>
+		            	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			            	<tr>
+							    <td style="width:50%; background-color: white; text-align: right; padding-right: 0.5rem;">
+									<a href="javascript:void(0)" class="title" style="color: #72ACE3; font-size: 1.2rem;" onclick="login()">登录</a>
+								</td>
+								<td style="width:50%; background-color: white; text-align: left; padding-left: 0.5rem;">
+									<a href="javascript:void(0)" class="title" style="color: #72ACE3; font-size: 1.2rem;" onclick="register()">注册</a>
+								</td>									
+						    </tr>
+			            </table>
+		            </p>
+		            <p class="intro" style="text-align: center; margin:0 0;">欢迎来到来到现音中国，请您先进行登录。</p>
+		            <p style="text-align: center; margin:0 0 0.6rem;">若还没有账号，点此<a href="javascript:void(0)" class="title" style="color: #72ACE3;" onclick="register()">注册</a>.</p>
+		        </div>
+		    </section> 
+		</c:when>
+		<c:otherwise>
+		    <section class="widget">
+		        <div class="right-div1">
+		            <p class="text-center"><img id="touxiang" src="${txURL}${user.txImg }" class="tx-style3" /></p>
+		            <p class="text-center no-margin">
+		            	Hi!&nbsp;
+		            	<span style="color: #72ACE3; font-size: 1.2rem;">${user.nickname }</span>
+		            </p>
+		            <p class="thank">音乐之旅，感谢有你！</p>		    
+		            <p>
+		            	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			            	<tr>
+							    <td style="width:50%; background-color: white; text-align: right; padding-right: 0.5rem;">
+									<button onclick="userCenter()">个人中心</button>
+								</td>
+								<td style="width:50%; background-color: white; text-align: left; padding-left: 0.5rem;">
+									<button onclick="exit()">退出登录</button>
+								</td>									
+						    </tr>
+			            </table>
+		            </p>        
+		        </div> 
+		    </section>
+	    </c:otherwise>
+	</c:choose>	
+	<section class="widget">
+	    <div class="quick-links-widget">
+	        <ul id="menu-quick-links" class="menu clearfix">
+	            <li><a href="${baseURL}">首页</a></li>
+	            <li><a href="${baseURL}/singing/page">原创&翻唱</a></li>
+	            <li><a href="${baseURL}/teaching/page">教学</a></li>
+	            <li><a href="${baseURL}/news/page">资讯</a></li>
+	            <%-- <li><a href="${baseURL}/test/page">测评</a></li> --%>
+	            <li><a href="${baseURL}/forum/page">论坛</a></li>
+	            <li><a href="${baseURL}/user/page">个人中心</a></li>
+	        </ul>
+	    </div>
+    </section>
+</aside>  
+
+<script type="text/javascript">
+	/* var prefixURL = location.protocol + "//" + window.location.host;
+	<c:set var="prefixURL" value="prefixURL" /> */
+	function register() {		
+		var returnURL = window.location.href;		
+		window.location.href = "${baseURL}/register/page?returnURL=" + returnURL;	
+	}
+	function login() {
+		var returnURL = window.location.href;		
+		window.location.href = "${baseURL}/login/page?returnURL=" + returnURL;	
+	}
+	function userCenter() {
+		window.location.href = "${baseURL}/user/page";	
+	}
+	function exit() {				
+		if(confirm("是否确定退出登录?")) {
+			window.location.href = "${baseURL}/login/exit"
+		}
+	}		
+</script>

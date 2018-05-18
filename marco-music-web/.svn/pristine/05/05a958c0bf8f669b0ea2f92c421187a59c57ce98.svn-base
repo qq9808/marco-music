@@ -1,0 +1,84 @@
+package com.marco.music.controller.news;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.marco.music.common.page.Page;
+import com.marco.music.model.news.News;
+import com.marco.music.service.news.NewsService;
+
+/**
+ * @author Marco
+ * @date 2017年6月1日 下午4:32:32
+ * 资讯Controller.
+ */
+@Controller
+public class NewsController {
+
+	protected Logger logger = Logger.getLogger(getClass());
+	
+	@Autowired
+	private NewsService newsService;
+	
+	/**
+	 * 资讯页面
+	 */
+	@RequestMapping("/news/page")
+	public String newsPage(HttpServletRequest request, HttpServletResponse response,
+			Integer curPage) {
+		
+		try {
+			
+			Page page = new Page();
+			
+			if(curPage != null) {
+				page.setCurPage(curPage);
+			}
+			page.setFetchSize(20);
+			
+			News news = new News();			
+			int count = newsService.countNewsByCondition(news);
+			page.setAllRecordNum(count);
+			page.setTotalPage(page.getTotalPage());
+			Integer startRow = page.getStartRow();
+			
+			List<News> list = newsService.searchNewsByCondition(news, startRow, page.getFetchSize());
+			
+			request.setAttribute("page", page);
+			request.setAttribute("list", list); 			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开资讯模块出错", e.fillInStackTrace());
+		}
+			
+		return "/news/news";
+	}
+	
+	/**
+	 * 资讯详情
+	 */
+	@RequestMapping("/news/detail")
+	public String newsDetail(HttpServletRequest request, HttpServletResponse response,
+			Integer id) {
+		
+		try {			
+			News news = newsService.get(id);			
+			if(news != null) {
+				request.setAttribute("news", news);
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开资讯详情出错", e.fillInStackTrace());
+		}
+			
+		return "/news/news_detail";
+	}
+	
+}

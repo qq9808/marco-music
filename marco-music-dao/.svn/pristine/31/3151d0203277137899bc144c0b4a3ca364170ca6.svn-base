@@ -1,0 +1,51 @@
+package com.marco.music.dao.teaching;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.criterion.Order;
+import org.springframework.stereotype.Repository;
+
+import com.marco.music.common.fatherDAO.FatherDAO;
+import com.marco.music.model.teaching.Teaching;
+
+/**
+ * @author Marco
+ * @date 2017年6月1日 下午10:56:10
+ * 教学DAO.
+ */
+@Repository
+public class TeachingDAO extends FatherDAO {
+
+	@Override
+	protected Class<?> getModelClass() {
+		return Teaching.class;
+	}
+	
+	public void save(Teaching teaching) {
+		super.save(teaching);
+	}
+	
+	public void update(Teaching teaching) {
+		super.update(teaching);
+	}
+	 
+	public Teaching get(Integer id) {
+		return (Teaching)super.get(getModelClass(), id);
+	}
+	
+	public void delete(Integer id) {
+		super.deleteById(getModelClass(), id);
+	}
+	
+	public int countTeachingByCondition(Teaching teaching) {
+		return super.count(teaching);
+	}
+	
+	public List<Teaching> searchTeachingByCondition(Teaching teaching, Integer startRow, Integer fetchSize) {
+		List<Order> orders = new ArrayList<Order>();
+		orders.add(Order.desc("createTime"));
+		return super.serach(teaching, orders, startRow, fetchSize);
+	}
+
+}

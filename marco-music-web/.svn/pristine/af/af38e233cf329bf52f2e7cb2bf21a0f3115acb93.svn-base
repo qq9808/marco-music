@@ -1,0 +1,45 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<!-- 用户个人资料 -->
+<div id="user-div" class="page-container div-shade">
+    <div class="x" onclick="cancel()"><a href="javascript:void(0)" style="color: white;" id="x">×</a></div>
+    <div style="width: 50rem; margin: auto; background: white;"> 
+    	<h3 class="title">个人资料</h3>
+    	<table width="100%" class="table-style">									
+    		<tr class="tr-style">
+				<td width="20%" class="td-style1">昵称：</td>
+				<td width="70%" class="td-style2">
+					<input id="nickname" style="width:90%" placeholder="必填项，长度为1~15位" maxlength="15" value="${user.nickname }" />
+				</td>
+			</tr>
+			<tr class="tr-style">
+				<td width="20%" class="td-style1">性别：</td>
+				<td width="70%" class="td-style2">
+					<input type="radio" name="sex" value="1" <c:if test="${user.sex eq 1 }">checked</c:if>> 男生 &nbsp;&nbsp;&nbsp;
+					<input type="radio" name="sex" value="2" <c:if test="${user.sex eq 2 }">checked</c:if>> 女生
+				</td>
+			</tr>
+			</tr>
+				<tr class="tr-style">
+				<td width="20%" class="td-style1">手机号码：</td>
+				<td width="70%" class="td-style2">
+					<input id="phone" style="width:90%" maxlength="15" value="${user.phone }" />
+				</td>
+			</tr>
+			<tr class="tr-style">
+				<td width="20%" class="td-style1">邮箱：</td>
+				<td width="70%" class="td-style2">
+					<input id="email" style="width:90%" placeholder="必填项，用于找回密码" maxlength="100" value="${user.email }" />
+				</td>
+			</tr>
+			<tr class="tr-style">
+				<td width="20%" class="td-style1">地区：</td>
+				<td width="70%" class="td-style2">
+					<input id="province" style="width:15%" maxlength="10" value="${user.province }" />省 &nbsp;
+					<input id="city" style="width:15%" maxlength="10" value="${user.city }" />市
+				</td>
+			</tr>		
+    	</table>   	
+		<button id="deliver" class="deliver" onclick="save()" style="border:0.02rem solid gray;">保存</button>
+	</div> 
+</div>

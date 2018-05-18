@@ -1,0 +1,48 @@
+package com.marco.music.service.test;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.test.TestDAO;
+import com.marco.music.model.test.Test;
+
+/**
+ * @author Marco
+ * @date 2017年6月2日 下午3:02:28
+ * 测评Service
+ */
+@Service
+@Transactional
+public class TestService {
+
+	@Autowired
+	private TestDAO testDAO;
+	
+	public void save(Test test) throws Exception {
+		testDAO.save(test);
+	}
+	
+	public void update(Test test) throws Exception {
+		testDAO.update(test);
+	}
+	
+	public Test get(Integer id) throws Exception {
+		return testDAO.get(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		testDAO.delete(id);
+	}
+	
+	public int countTestByCondition(Test test) throws Exception {
+		return testDAO.countTestByCondition(test);
+	}
+	
+	public List<Test> searchTestByCondition(Test test, Integer startRow, Integer fetchSize) throws Exception {
+		return testDAO.searchTestByCondition(test, startRow, fetchSize);
+	}
+	
+}

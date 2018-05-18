@@ -1,0 +1,838 @@
+package com.bky.controller;
+
+import com.bky.bean.PoliceMovie;
+import com.bky.bean.PoliceNews;
+import com.bky.bean.WeiXinSession;
+import com.bky.common.Page;
+import com.bky.dao.PayMentDao;
+import com.bky.service.PoliceMovieService;
+import com.bky.service.PoliceNewsService;
+import com.bky.utils.DateProcess;
+import com.bky.utils.DateUtil;
+import com.bky.utils.HttpProcess;
+import com.bky.utils.JsonProcess;
+import com.bky.utils.JsonUtils;
+import com.bky.utils.MD5Util;
+import com.bky.utils.ObjectUtil;
+import com.bky.utils.PoliceNewsUtils;
+import com.bky.utils.WeiXinProperties;
+import com.bky.utils.WeixinMap;
+import com.bky.utils.XmlProcess;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import sun.misc.BASE64Encoder;
+
+//产线上的代码
+@Controller
+public class WeixinController
+{
+  private static Logger log = Logger.getLogger(WeixinController.class);
+  protected String CONTENT_TYPE_JSON = "text/html;charset=UTF-8";
+  protected String CONTENT_TYPE_XML = "text/xml;charset=UTF-8";
+  private static final String POLICE_NEWS_PUBLIC = "POLICE_NEW_PUBLIC";
+  private static final String POLICE_PING_AN = "POLICE_PING_AN";
+  private static final String POLICE_FANG_PIAN = "POLICE_FANG_PIAN";
+  private static final String MENU_POLICE_SERVICES = "MENU_POLICE_SERVICES";
+  private static final String QuickPayment = "quick_payment_scene";
+  private static final String IsFirstPicture = "is_first_picture";
+  protected String WX_OPENID_SESSION_KEY = "wxOpenIdSessionKey";
+  private static Properties weiXinReplyProp = new Properties();
+  @Autowired
+  protected PoliceNewsService policeNewsService;
+  @Autowired
+  protected PoliceMovieService policeMovieService;
+  @Autowired
+  protected PayMentDao payMentDao;
+  HttpProcess httpProcess = new HttpProcess();
+  JsonProcess jsonProcess = new JsonProcess();
+  Logger logger = Logger.getLogger(WeixinController.class.getName());
+  
+  static
+  {
+    String filePath = WeixinController.class.getClassLoader().getResource("weixin_reply.properties").getFile();
+    log.debug(filePath);
+    try
+    {
+      weiXinReplyProp.load(new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "utf-8")));
+    }
+    catch (Exception e)
+    {
+      log.error("加载weixin_reply.properties失败", e);
+    }
+  }
+  
+  @RequestMapping(value={"receive.do"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
+  public String receive1(HttpServletRequest request, HttpServletResponse response)
+    throws IOException
+  {
+    Logger logger = Logger.getLogger(WeixinController.class.getName());
+    String signature = request.getParameter("signature");
+    String timestamp = request.getParameter("timestamp");
+    String nonce = request.getParameter("nonce");
+    String echostr = request.getParameter("echostr");
+    logger.info("开始验证token");
+    logger.info("signature====" + signature);
+    logger.info("timestamp====" + timestamp);
+    logger.info("nonce===" + nonce);
+    logger.info("echostr====" + echostr);
+    
+
+
+
+
+
+
+    String[] arr = { "ceshi", timestamp, nonce };
+    Arrays.sort(arr);
+    return writeResponse(response, echostr, this.CONTENT_TYPE_JSON);
+  }
+  
+  @RequestMapping(value={"receive.do"}, method={org.springframework.web.bind.annotation.RequestMethod.POST})
+  public String receive2(HttpServletRequest request, HttpServletResponse response)
+    throws Exception
+  {
+    Map map = XmlProcess.processStreamXml(request.getInputStream());
+    String event = ObjectUtil.getObject(map.get("Event"));
+    String msgType = ObjectUtil.getObject(map.get("MsgType"));
+    this.logger.info("进入微信后台");
+    this.logger.info("event=======" + event + "msgType======" + msgType);
+    String content = new String();
+    String _content = new String();
+    if ((msgType.equals("event")) && (event.equals("CLICK")))
+    {
+      String eventKey = ObjectUtil.getObject(map.get("EventKey"));
+      this.logger.info("eventKey=======" + eventKey);
+      if (eventKey.equals("POLICE_NEW_PUBLIC"))
+      {
+        _content = handlePoliceRespMessage(map, 1);
+      }
+      else if (eventKey.equals("POLICE_FANG_PIAN"))
+      {
+        _content = handlePoliceRespMessage(map, 2);
+      }
+      else if (eventKey.equals("POLICE_PING_AN"))
+      {
+        _content = handlePoliceRespMessage(map, 3);
+      }
+      else if (eventKey.equals("MENU_POLICE_SERVICES"))
+      {
+        _content = handlePoliceRespMessage(map, 4);
+      }
+      else if (eventKey.equals("POLICE_MOVIE_MENU"))
+      {
+        _content = handlePoliceMovieRespMessage(map);
+      }
+      else if (eventKey.equals("MENU_PAYMENT_BUSINESS"))
+      {
+        this.logger.info("menu======================");
+        _content = handleMenuClickEvent(map, request, response);
+      }
+      else
+      {
+        content = WeiXinProperties.getProperties().getProperty(eventKey);
+        this.logger.info("eventKey=======" + eventKey);
+        this.logger.info("转换前的content=======" + content);
+        _content = fillParam(content, map);
+        this.logger.info("转换后的content=======" + _content);
+      }
+    }
+    else if (event.equals("subscribe"))
+    {
+      content = WeiXinProperties.getProperties().getProperty("subscribe");
+      _content = fillParam(content, map);
+    }
+    else if (event.equals("unsubscribe"))
+    {
+      _content = handleUnsubscribe(map);
+    }
+    else if (msgType.equals("text"))
+    {
+      String key = ObjectUtil.getObject(map.get("Content"));
+      this.logger.info("开始处理预定义命令" + key);
+      _content = handleTextMsg(map, request, response);
+    }
+    else if (msgType.equalsIgnoreCase("image"))
+    {
+      _content = handleImageNews(map, request, response);
+    }
+    else if (msgType.equalsIgnoreCase("location"))
+    {
+      _content = handleLocation(map, request, response);
+    }
+    this.logger.info("content=======" + _content);
+    writeResponse(response, _content, this.CONTENT_TYPE_XML);
+    return null;
+  }
+  
+  public String anserMess(String key, Map map)
+  {
+    String _content = new String();
+    String type = WeixinMap.isContain(key);
+    if (type.equals("1")) {
+      return dbMess(key, map);
+    }
+    String value = WeixinMap.getValue(key);
+    if ((value != null) && (!value.equals("")))
+    {
+      if (value.equals("POLICE_NEW_PUBLIC"))
+      {
+        _content = handlePoliceRespMessage(map, 1);
+      }
+      else
+      {
+        String content = WeiXinProperties.getProperties().getProperty(value);
+        this.logger.info("eventKey=======" + value);
+        this.logger.info("转换前的content=======" + content);
+        _content = fillParam(content, map);
+        this.logger.info("转换后的content=======" + _content);
+      }
+    }
+    else {
+      _content = "";
+    }
+    return _content;
+  }
+  
+  private String dbMess(String type, Map map)
+  {
+    String _content = new String();
+    if (type.equals("6")) {
+      _content = handlePoliceRespMessage(map, 1);
+    } else if (type.equals("9")) {
+      _content = handlePoliceRespMessage(map, 2);
+    } else if (type.equals("10")) {
+      _content = handlePoliceRespMessage(map, 3);
+    } else if (type.equals("1")) {
+      _content = handlePoliceRespMessage(map, 4);
+    } else if (type.equals("14")) {
+      _content = handlePoliceMovieRespMessage(map);
+    }
+    return _content;
+  }
+  
+  private String handleUnsubscribe(Map<String, Object> attributeMap)
+  {
+    return 
+    
+      "<xml>" + "<ToUserName><![CDATA[" + attributeMap.get("FromUserName") + "]]></ToUserName>" + "<FromUserName><![CDATA[" + (String)attributeMap.get("ToUserName") + "]]></FromUserName>" + "<CreateTime>" + DateProcess.dateToStringNosec() + "</CreateTime>" + "<MsgType><![CDATA[text]]></MsgType>" + "<Content><![CDATA[" + WeiXinProperties.getProperties().getProperty("unsubscribe") + "]]></Content>" + "<FuncFlag>0</FuncFlag>" + "</xml>";
+  }
+  
+  private String fillParam(String content, Map map)
+  {
+    Logger logger = Logger.getLogger(WeixinController.class.getName());
+    String _content = content.replace("{ToUserName}", (String)map.get("FromUserName")).replace("{FromUserName}", (String)map.get("ToUserName")).replace("{CreateTime}", DateProcess.dateToStringNosec())
+      .replace("{WX_WAP_BASE_URL}", WeiXinProperties.getProperties().getProperty("WX_WAP_BASE_URL")).replace("{WX_WAP_NEWS_URL}", WeiXinProperties.getProperties().getProperty("WX_WAP_NEWS_URL"))
+      .replace("{WX_TOKEN}", (String)map.get("FromUserName"));
+    logger.info(_content);
+    logger.info("openid====" + map.get("FromUserName"));
+    return _content;
+  }
+  
+  public String writeResponse(HttpServletResponse response, String content, String contentType)
+  {
+    try
+    {
+      response.setContentType(contentType);
+      response.setHeader("Pragma", "No-cache");
+      response.setHeader("Cache-Control", "no-cache");
+      response.setDateHeader("Expires", 0L);
+      PrintWriter printWriter = response.getWriter();
+      printWriter.write(content);
+      printWriter.flush();
+      printWriter.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  private String handlePoliceRespMessage(Map<String, Object> map, int type)
+  {
+    try
+    {
+      Page page = new Page(1);
+      page.setPageSize(4);
+      page = this.policeNewsService.findPoliceNewsByPage(type, page);
+      if ((page != null) && (page.getData().size() > 0))
+      {
+        List<PoliceNews> list = page.getData();
+        String reply = PoliceNewsUtils.formPoliceNews(list, type);
+        return fillParam(reply, map);
+      }
+      String reply = "<xml><ToUserName><![CDATA[{ToUserName}]]></ToUserName><FromUserName><![CDATA[{FromUserName}]]></FromUserName><CreateTime>{CreateTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[尊敬的用户，您好，系统暂无相关信息，请先使用别的功能，稍后将更新，感谢您的关注。]]></Content><FuncFlag>0</FuncFlag></xml>";
+      return fillParam(reply, map);
+    }
+    catch (Exception localException) {}
+    return null;
+  }
+  
+  private String handlePoliceMovieRespMessage(Map<String, Object> map)
+  {
+    try
+    {
+      String wxOpenId = (String)map.get("FromUserName");
+      Page page = new Page(1);
+      page.setPageSize(4);
+      page = this.policeMovieService.findPoliceMovieByPage(page);
+      if ((page != null) && (page.getData().size() > 0))
+      {
+        List<PoliceMovie> list = page.getData();
+        String reply = PoliceNewsUtils.formPoliceMovie(list, wxOpenId);
+        return fillParam(reply, map);
+      }
+      String reply = "<xml><ToUserName><![CDATA[{ToUserName}]]></ToUserName><FromUserName><![CDATA[{FromUserName}]]></FromUserName><CreateTime>{CreateTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[尊敬的用户，您好，系统暂无相关警视信息，请先使用别的功能，稍后将更新警视视频，感谢您的关注。]]></Content><FuncFlag>0</FuncFlag></xml>";
+      return fillParam(reply, map);
+    }
+    catch (Exception localException) {}
+    return null;
+  }
+  
+  @RequestMapping({"movie.do"})
+  public String testNews(HttpServletRequest request)
+  {
+    String wxOpenId = "testopenid";
+    Page page = new Page(1);
+    page.setPageSize(4);
+    page = this.policeMovieService.findPoliceMovieByPage(page);
+    List<PoliceMovie> list = page.getData();
+    String reply = PoliceNewsUtils.formPoliceMovie(list, wxOpenId);
+    return reply;
+  }
+  
+  public static void main(String[] art)
+  {
+    HttpPost httppost = new HttpPost("url");
+    try
+    {
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+      CloseableHttpClient hc = httpClientBuilder.build();
+      httppost.setEntity(new StringEntity("xml", "utf-8"));
+      HttpResponse response = hc.execute(httppost);
+      int code = response.getStatusLine().getStatusCode();
+      String charset = "UTF-8";
+      if (code == 200)
+      {
+        String mess = EntityUtils.toString(response.getEntity(), charset);
+        System.out.println("返回报文=====" + mess);
+      }
+    }
+    catch (UnsupportedEncodingException e)
+    {
+      e.printStackTrace();
+    }
+    catch (ParseException e)
+    {
+      e.printStackTrace();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  
+  private String handleMenuClickEvent(Map<String, Object> attributeMap, HttpServletRequest request, HttpServletResponse response)
+  {
+    log.info("one======================：");
+    String key = (String)attributeMap.get("EventKey");
+    String wxOpenId = (String)attributeMap.get("FromUserName");
+    
+    String scene = null;
+    WeiXinSession wxSession = null;
+    WeiXinSession wxSession2 = null;
+    Map map = new HashMap();
+    map.put("openId", MD5Util.getMD5Str(wxOpenId));
+    map.put("scene", "quick_payment_scene");
+    log.info("two---key======================：" + key);
+    if (StringUtils.isBlank(key)) {
+      return null;
+    }
+    if ("MENU_PAYMENT_BUSINESS".equals(key)) {
+      try
+      {
+        wxSession = this.payMentDao.getWXinSessionByLast(map);
+        log.info("---wxSession======================" + wxSession);
+        if (wxSession == null)
+        {
+          wxSession = new WeiXinSession();
+          wxSession.setId(UUID.randomUUID().toString());
+          wxSession.setScene("quick_payment_scene");
+          wxSession.setStatus("1");
+          wxSession.setCreatetime(new Date());
+          wxSession.setUserid(MD5Util.getMD5Str(wxOpenId));
+          log.info("three---key======================");
+          this.payMentDao.insertWeiXinSessionInfo(wxSession);
+        }
+        else if ((wxSession.getUpdatetime() != null) && ((new Date().getTime() - wxSession.getUpdatetime().getTime()) / 60000L > 30L))
+        {
+          wxSession.setStatus("0");
+          this.payMentDao.updateWeiXinSessionInfo(wxSession);
+          wxSession = new WeiXinSession();
+          wxSession.setId(UUID.randomUUID().toString());
+          wxSession.setScene("quick_payment_scene");
+          wxSession.setStatus("1");
+          wxSession.setCreatetime(new Date());
+          wxSession.setUserid(MD5Util.getMD5Str(wxOpenId));
+          log.info("four---key======================");
+          this.payMentDao.insertWeiXinSessionInfo(wxSession);
+        }
+      }
+      catch (SQLException e)
+      {
+        log.info("创建业务会话异常：" + e.getMessage());
+        e.printStackTrace();
+        return null;
+      }
+    }
+    try
+    {
+      wxSession2 = this.payMentDao.getWXinSessionByLast(map);
+      if (wxSession2 != null)
+      {
+        scene = wxSession2.getScene();
+        if (!"MENU_PAYMENT_BUSINESS".equals(key))
+        {
+          wxSession2.setStatus("0");
+          log.info("five---key======================");
+          this.payMentDao.updateWeiXinSessionInfo(wxSession2);
+          scene = null;
+        }
+      }
+    }
+    catch (SQLException e)
+    {
+      log.info("查询业务会话异常：" + e.getMessage());
+      e.printStackTrace();
+    }
+    log.info("QuickPayment=======" + scene);
+    if ((!StringUtils.isBlank(scene)) && ("quick_payment_scene".equals(scene)))
+    {
+      if ((wxSession2 != null) && (!StringUtils.isBlank(wxSession2.getData())))
+      {
+        Map<String, String> dataMap = (Map)JsonUtils.toBean(wxSession2.getData(), Map.class);
+        String isUpload = (String)dataMap.get("is_first_picture");
+        if ((StringUtils.isNotBlank(isUpload)) && ("second".equals(isUpload))) {
+          return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_INPUT_MOBILE"));
+        }
+        if ((!StringUtils.isBlank(isUpload)) && ("first".equals(isUpload))) {
+          return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE2"));
+        }
+        if ((!StringUtils.isBlank((String)dataMap.get("locationX"))) && (!StringUtils.isBlank((String)dataMap.get("locationY"))))
+        {
+          String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE1");
+          this.logger.info("提示上传第一张图片=" + respMsg);
+          return formatResponseMessage(attributeMap, respMsg);
+        }
+        return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+      }
+      return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+    }
+    log.info("点击菜单事件进入普通场景");
+    if ("POLICE_NEW_PUBLIC".equals(key)) {
+      return handlePoliceRespMessage(attributeMap, 1);
+    }
+    if ("POLICE_FANG_PIAN".equals(key)) {
+      return handlePoliceRespMessage(attributeMap, 2);
+    }
+    if ("POLICE_PING_AN".equals(key)) {
+      return handlePoliceRespMessage(attributeMap, 3);
+    }
+    if ("MENU_POLICE_SERVICES".equals(key)) {
+      return handlePoliceRespMessage(attributeMap, 4);
+    }
+    return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty(key));
+  }
+  
+  private String handleTextMsg(Map<String, Object> attributeMap, HttpServletRequest request, HttpServletResponse response)
+    throws UnsupportedEncodingException
+  {
+    String reqMsg = (String)attributeMap.get("Content");
+    String scene = null;
+    WeiXinSession wxSession = null;
+    
+    String wxOpenId = (String)attributeMap.get("FromUserName");
+    
+    Map map = new HashMap();
+    map.put("openId", MD5Util.getMD5Str(wxOpenId));
+    map.put("scene", "quick_payment_scene");
+    try
+    {
+      wxSession = this.payMentDao.getWXinSessionByLast(map);
+      if (wxSession != null) {
+        scene = wxSession.getScene();
+      }
+    }
+    catch (SQLException e)
+    {
+      log.info("信息回复获取用户会话场景出现异常：" + e.getMessage());
+      return null;
+    }
+    log.info("用户进入的场景：" + scene);
+    if ((!StringUtils.isBlank(scene)) && ("quick_payment_scene".equals(scene))) {
+      return handleQuickPayMessage(attributeMap, wxSession);
+    }
+    String key = ObjectUtil.getObject(attributeMap.get("Content"));
+    return anserMess(key, attributeMap);
+  }
+  
+  public String handleQuickPayMessage(Map<String, Object> attributeMap, WeiXinSession wxSession)
+  {
+    log.info("文本信息：" + attributeMap.toString());
+    String reqMsg = (String)attributeMap.get("Content");
+    String regex = "^1\\d{10}$";
+    reqMsg = reqMsg.toUpperCase();
+    if (("Q".equalsIgnoreCase(reqMsg)) && (wxSession != null) && (wxSession.getId() != null))
+    {
+      wxSession.setStatus("0");
+      try
+      {
+        this.payMentDao.updateWeiXinSessionInfo(wxSession);
+      }
+      catch (SQLException e)
+      {
+        String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_QUIT");
+        return formatResponseMessage(attributeMap, respMsg);
+      }
+      String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_QUIT");
+      return formatResponseMessage(attributeMap, respMsg);
+    }
+    String isUpload = null;
+    String image1 = null;
+    if ((wxSession != null) && (!StringUtils.isBlank(wxSession.getData())))
+    {
+      Map<String, Object> respMap = null;
+      Map<String, String> dataMap = (Map)JsonUtils.toBean(wxSession.getData(), Map.class);
+      if (!dataMap.isEmpty())
+      {
+        isUpload = (String)dataMap.get("is_first_picture");
+        image1 = (String)dataMap.get("image1");
+        if ((!StringUtils.isBlank(isUpload)) && ("second".equals(isUpload)) && (!StringUtils.isBlank(image1)))
+        {
+          if (reqMsg.matches(regex))
+          {
+            Map<String, Object> req = new HashMap();
+            req.put("address", (String)dataMap.get("address"));
+            req.put("lat", Double.valueOf((String)dataMap.get("locationX")));
+            req.put("lng", Double.valueOf((String)dataMap.get("locationY")));
+            req.put("mobile", reqMsg);
+            req.put("imagedata1", (String)dataMap.get("image1"));
+            req.put("imagedata2", (String)dataMap.get("image2"));
+            req.put("imei", reqMsg);
+            try
+            {
+              ByteArrayOutputStream bao2 = null;
+              ByteArrayOutputStream bao1 = null;
+              try
+              {
+                URL url1 = new URL((String)req.get("imagedata1"));
+                URL url2 = new URL((String)req.get("imagedata2"));
+                BufferedImage image = ImageIO.read(url1);
+                BufferedImage image2 = ImageIO.read(url2);
+                BASE64Encoder base64 = new BASE64Encoder();
+                bao1 = new ByteArrayOutputStream();
+                bao2 = new ByteArrayOutputStream();
+                ImageIO.write(image, "jpg", bao1);
+                ImageIO.write(image2, "jpg", bao2);
+                String img1 = base64.encode(bao1.toByteArray());
+                String img2 = base64.encode(bao2.toByteArray());
+                log.info("+++++++++++++++++转码后的图片img1=" + img1 + "=============" + img2);
+                req.put("auth", this.jsonProcess.getHeadAuth());
+                req.put("imagedata1", img1);
+                req.put("imagedata2", img2);
+                bao1.flush();
+                bao2.flush();
+                String json = JsonProcess.toJson(req);
+                this.httpProcess.setKey("/itms-api/services/quickpayInfoService/uploadQuickpayInfo");
+                respMap = this.httpProcess.processMapHttp(json);
+              }
+              catch (Exception e)
+              {
+                e.printStackTrace();
+                if (bao1 != null)
+                {
+                  try
+                  {
+                    bao1.close();
+                  }
+                  catch (IOException localIOException) {}
+                  if (bao2 != null) {
+                    try
+                    {
+                      bao2.close();
+                    }
+                    catch (IOException localIOException1) {}
+                  }
+                }
+              }
+              finally
+              {
+                if (bao1 != null)
+                {
+                  try
+                  {
+                    bao1.close();
+                  }
+                  catch (IOException localIOException2) {}
+                  if (bao2 != null) {
+                    try
+                    {
+                      bao2.close();
+                    }
+                    catch (IOException localIOException3) {}
+                  }
+                }
+              }
+              if ((!respMap.isEmpty()) && (!"".equals(respMap.get("reportno"))))
+              {
+                String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_SUCCESS");
+                String date = DateUtil.dateToString(new Date(), "yyyy年MM月dd日HH时mm分");
+                respMsg = respMsg.replace("{reportNo}", (String)respMap.get("reportno"))
+                  .replace("{passCode}", (String)respMap.get("passcode"))
+                  .replace("{reportTime}", date)
+                  .replace("{address}", String.valueOf(req.get("address")))
+                  .replace("{lat}", String.valueOf(req.get("lat")))
+                  .replace("{lng}", String.valueOf(req.get("lng")));
+                wxSession.setStatus("0");
+                this.payMentDao.updateWeiXinSessionInfo(wxSession);
+                return formatResponseMessage(attributeMap, respMsg);
+              }
+              wxSession.setStatus("0");
+              this.payMentDao.updateWeiXinSessionInfo(wxSession);
+              String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_FALSE");
+              return formatResponseMessage(attributeMap, respMsg);
+            }
+            catch (Exception e)
+            {
+              log.error("办理快撤理赔异常：" + e.getMessage());
+              wxSession.setStatus("0");
+              try
+              {
+                this.payMentDao.updateWeiXinSessionInfo(wxSession);
+              }
+              catch (SQLException e1)
+              {
+                log.error(e.getMessage());
+              }
+              String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_FALSE");
+              return formatResponseMessage(attributeMap, respMsg);
+            }
+          }
+          return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_ERROR_MOBILE"));
+        }
+        if ((!StringUtils.isBlank(isUpload)) && ("first".equals(isUpload)) && (!StringUtils.isBlank(image1))) {
+          return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE2"));
+        }
+        if ((StringUtils.isBlank(isUpload)) && (!StringUtils.isBlank((String)dataMap.get("locationX"))))
+        {
+          String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE1");
+          return formatResponseMessage(attributeMap, respMsg);
+        }
+        return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+      }
+      return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+    }
+    return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS_B"));
+  }
+  
+  private String handleImageNews(Map<String, Object> attributeMap, HttpServletRequest request, HttpServletResponse response)
+  {
+    log.info("图片信息：" + attributeMap.toString());
+    HttpSession session = request.getSession();
+    
+    String scene = null;
+    WeiXinSession wxSession = null;
+    
+    String wxOpenId = (String)attributeMap.get("FromUserName");
+    
+    Map map = new HashMap();
+    map.put("openId", MD5Util.getMD5Str(wxOpenId));
+    map.put("scene", "quick_payment_scene");
+    try
+    {
+      wxSession = this.payMentDao.getWXinSessionByLast(map);
+      if (wxSession != null) {
+        scene = wxSession.getScene();
+      } else {
+        return null;
+      }
+    }
+    catch (SQLException e)
+    {
+      log.info("图片信息处理查询业务会话异常：" + e.getMessage());
+      if ((!StringUtils.isBlank(scene)) && ("quick_payment_scene".equals(scene)))
+      {
+        String imagePath = (String)attributeMap.get("PicUrl");
+        if (!StringUtils.isBlank(wxSession.getData()))
+        {
+          Map<String, String> dataMap = (Map)JsonUtils.toBean(wxSession.getData(), Map.class);
+          log.info(dataMap.toString());
+          if (!dataMap.isEmpty())
+          {
+            log.info("1111");
+            String isFirst = (String)dataMap.get("is_first_picture");
+            String locationX = (String)dataMap.get("locationX");
+            String locationY = (String)dataMap.get("locationY");
+            JSONObject object = JSONObject.fromObject(wxSession.getData());
+            log.info("isFirst===" + isFirst);
+            if ((!StringUtils.isBlank(isFirst)) && (!StringUtils.isBlank(locationX)) && (!StringUtils.isBlank(locationY)))
+            {
+              if ("first".equals(isFirst))
+              {
+                if (!StringUtils.isBlank(imagePath))
+                {
+                  object.element("image2", imagePath);
+                  object.element("is_first_picture", "second");
+                  wxSession.setData(object.toString());
+                  try
+                  {
+                    this.payMentDao.updateWeiXinSessionInfo(wxSession);
+                  }
+                  catch (SQLException e)
+                  {
+                    log.info("上传第二张图片出现异常：" + e.getMessage());
+                    e.printStackTrace();
+                    return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE2"));
+                  }
+                  return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_INPUT_MOBILE"));
+                }
+                return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE2"));
+              }
+            }
+            else
+            {
+              if (StringUtils.isBlank(isFirst))
+              {
+                log.info("2222");
+                if (!StringUtils.isBlank(imagePath))
+                {
+                  object.element("image1", imagePath);
+                  object.element("is_first_picture", "first");
+                  wxSession.setData(object.toString());
+                  try
+                  {
+                    this.payMentDao.updateWeiXinSessionInfo(wxSession);
+                  }
+                  catch (SQLException e)
+                  {
+                    log.info("上传第一张图片出现异常：" + e.getMessage());
+                    return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE1"));
+                  }
+                  return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE2"));
+                }
+                return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE1"));
+              }
+              return null;
+            }
+          }
+          else
+          {
+            return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+          }
+        }
+      }
+    }
+    return null;
+  }
+  
+  private String handleLocation(Map<String, Object> attributeMap, HttpServletRequest request, HttpServletResponse response)
+  {
+    log.info("位置信息：" + attributeMap.toString());
+    String scene = null;
+    WeiXinSession wxSession = null;
+    String wxOpenId = (String)attributeMap.get("FromUserName");
+    
+    Map map = new HashMap();
+    map.put("openId", MD5Util.getMD5Str(wxOpenId));
+    map.put("scene", "quick_payment_scene");
+    try
+    {
+      wxSession = this.payMentDao.getWXinSessionByLast(map);
+      log.info("wxSession====：" + wxSession);
+      if (wxSession != null) {
+        scene = wxSession.getScene();
+      } else {
+        return null;
+      }
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+      if ((!StringUtils.isBlank(scene)) && ("quick_payment_scene".equals(scene)))
+      {
+        if (StringUtils.isBlank(wxSession.getData()))
+        {
+          String locationX = (String)attributeMap.get("Location_X");
+          String locationY = (String)attributeMap.get("Location_Y");
+          String address = (String)attributeMap.get("Label");
+          if ((address == null) || ("".equals(address))) {
+            address = "广东省广州市";
+          }
+          if ((locationX != null) || (locationY != null) || (address != null))
+          {
+            JSONObject object = new JSONObject();
+            object.element("locationX", locationX);
+            object.element("locationY", locationY);
+            object.element("address", address);
+            wxSession.setData(object.toString());
+            try
+            {
+              this.payMentDao.updateWeiXinSessionInfo(wxSession);
+            }
+            catch (SQLException e)
+            {
+              log.info("保存获取位置信息出现异常：" + e.getMessage());
+              return formatResponseMessage(attributeMap, weiXinReplyProp.getProperty("MENU_PAYMENT_BUSINESS"));
+            }
+            String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_UPLOAD_IMAGE1");
+            return formatResponseMessage(attributeMap, respMsg);
+          }
+          String respMsg = weiXinReplyProp.getProperty("QUICK_PAY_LOCATION_FAILURE");
+          return formatResponseMessage(attributeMap, respMsg);
+        }
+        return null;
+      }
+    }
+    return null;
+  }
+  
+  private String formatResponseMessage(Map<String, Object> attributeMap, String responseMsg)
+  {
+    String _reply = fillParam(responseMsg, attributeMap);
+    return _reply;
+  }
+}

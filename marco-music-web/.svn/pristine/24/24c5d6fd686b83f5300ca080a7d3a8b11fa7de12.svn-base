@@ -1,0 +1,119 @@
+/*-------遮罩------*/
+.div-shade {
+	display: none;  
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	-webkit-box-orient: horizontal;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	background: rgba(0, 0, 0, 0.8); 
+}
+.div-shade.show {
+	display: -webkit-box !important;
+}
+.div-width {
+	width: 47% !important;
+}
+.hr-width {
+	width: 50% !important;
+}
+.x {
+	position: fixed;
+	top: 2rem;
+	right: 8rem;
+	font-size: 3.5rem;
+}
+#x:hover {
+	color: #6f7579 !important;
+}
+.cool {
+	background: url(../img/comment.png) no-repeat left center; 
+	display: inline-block;
+	padding-left: 1.2rem;
+	margin-left: 2rem;
+}
+.reply {
+	background: url(../img/comment.png) no-repeat left center; 
+	display: inline-block;
+	padding-left: 1.2rem;	
+}
+.span2-width {
+	width: 10% important;
+}
+.deliver {
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin:1% 40%;
+    cursor: pointer;
+    background-color: white; 
+    color: #6f7579;
+    width: 20%;
+    height: 2rem;
+    box-shadow: 2px 2px 5px #d3d6da;
+    border-radius: 0.3rem;
+}
+.deliver:hover {
+	background-color: #6f7579; 
+	color: white;
+}
+.my-div:hover {
+	border:2px solid gray;
+	box-shadow: 0.5rem 0.5rem 0.5rem gray;
+}
+.table-style {
+	border-collapse: separate;   
+	border-spacing: 10px; 
+}
+.table-style input {
+	border-radius: 0.1rem;
+}
+.tr-style {
+	text-align: center;
+}
+.td-style1 {
+	text-align: center;
+}
+.td-style2 {
+	text-align: left;
+}
+.title-a {
+	text-align: center;
+}
+.button-style {
+	background-color: #400000; 
+    border: none;
+    color: white;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    /* margin: 0.2rem 0.2rem; */
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; 
+    transition-duration: 0.4s;
+}
+.button-style:hover {
+	background-color: #B8B8B8; 
+}
+.right-div1 {
+    border: 1px solid #400000;
+    padding: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+    background-size:5rem 5rem;
+}
+
+/*----------------------------  个人中心（开始）  ----------------------------*/
+
+
+
+
+
+/*----------------------------  个人中心（结束）  ----------------------------*/

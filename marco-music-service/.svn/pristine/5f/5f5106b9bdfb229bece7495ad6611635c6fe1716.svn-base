@@ -1,0 +1,44 @@
+package com.marco.music.service.user;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.user.UserDAO;
+import com.marco.music.model.user.User;
+
+/**
+ * @author Marco
+ * @date 2017年5月21日 下午9:45:56
+ * 用户Service.
+ */
+@Service
+@Transactional
+public class UserService {
+
+	@Autowired
+	private UserDAO userDAO;
+	
+	public void save(User user) throws Exception {
+		userDAO.save(user);
+	}
+	
+	public void update(User user) throws Exception {
+		userDAO.update(user);
+	}
+	
+	public User get(Integer id) throws Exception {
+		return userDAO.get(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		userDAO.delete(id);
+	}
+	
+	public List<User> findUserByAccount(String account) throws Exception {
+		return userDAO.findUserByAccount(account);
+	}
+	
+}

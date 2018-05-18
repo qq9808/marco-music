@@ -1,0 +1,55 @@
+package com.marco.music.dao.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.marco.music.common.fatherDAO.FatherDAO;
+import com.marco.music.model.test.TestReply;
+
+/**
+ * @author Marco
+ * @date 2017年6月2日 下午2:36:46
+ * 测评回复DAO.
+ */
+@Repository
+public class TestReplyDAO extends FatherDAO {
+
+	@Override
+	protected Class<?> getModelClass() {
+		return TestReply.class;
+	}
+	
+	public void save(TestReply testReply) {
+		super.save(testReply);
+	}
+	
+	public void update(TestReply testReply) {
+		super.update(testReply);
+	}
+	
+	public TestReply get(Integer id) {
+		return (TestReply)super.get(getModelClass(), id);
+	}
+	
+	public void delete(Integer id) {
+		super.deleteById(getModelClass(), id);
+	}
+	
+	public int countTestReplyByCondition(TestReply testReply) {
+		return super.count(testReply);
+	}
+	
+	public List<Object[]> findTestReplyByIDForPage(Integer id, Integer startRow, Integer fetchSize) {
+		
+		String sql = " SELECT a.id,a.level,a.userid,a.nickname,a.content,a.createtime,b.userid AS userid1,b.nickname AS nickname1,b.content AS content1 FROM article_test_reply a LEFT JOIN (SELECT id,userid,nickname,content FROM article_test_reply) b ON (a.reply_id = b.id) WHERE a.test_id = ? order by a.createtime asc ";
+		
+		List<Object> values = new ArrayList<Object>();
+		values.add(id);
+		
+		List<Object[]> list = super.findListBySqlForPage(sql, values, startRow, fetchSize);
+		return list;
+	}
+
+}

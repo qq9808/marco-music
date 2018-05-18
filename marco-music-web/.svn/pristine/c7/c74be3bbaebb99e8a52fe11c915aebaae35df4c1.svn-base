@@ -1,0 +1,169 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>现音中国-原创&翻唱</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+	    <div class="container">
+	        <div class="row">
+	            <div class="span8 main-listing">
+	                <c:forEach items="${list}" var="singing">
+		                <article class="format-standard type-post hentry clearfix">	
+		                    <header class="clearfix">	
+		                        <h3 class="post-title">
+		                        	<c:choose>
+					            		<c:when test="${empty singing[6] }">
+					            			<img id="touxiang" src="${baseURL}/sources/img/touxiang.png" style="width: 2.5rem;; height: 2.5rem;; overflow:hidden; border:0.05rem solid black" />
+					            		</c:when>   
+					            		<c:otherwise>
+					            			<img id="touxiang" src="${prefixURL}${txURL}${singing[6] }" style="width: 2.5rem; height: 2.5rem;; overflow:hidden;" />
+					            		</c:otherwise>
+					            	</c:choose>  
+                                	<a href="${baseURL}/singing/detail?id=${singing[0]}">${singing[1]}</a>
+		                        </h3>	
+	                            <div class="post-meta clearfix">
+	                                <span class="category"><a href="#" style="color: #6f7579;">${singing[5]}</a></span>
+	                                <span class="date"><fmt:formatDate value="${singing[3] }" pattern="yyyy-MM-dd HH:mm" /></span>	                               
+	                                <span class="comments" style="float: right;">${singing[7] } 回复</span>
+	                                <!-- <span class="like-count">0</span> -->
+	                            </div>	
+		                    </header>			                    	
+		                </article> 
+	                </c:forEach>             
+					<script type="text/javascript">
+						var pageURL = baseURL + "/singing/page";
+					</script>                                                             
+                    <%@ include file="/WEB-INF/jsp/common/page.jsp"%> 
+                </div>	            
+	            <!-- <aside class="span4 page-sidebar">	
+				    <section class="widget">
+				        <div>
+				            <div style="margin-bottom: 5%;">
+					            <a href="javascript:void(0)" class="title" style="color: #72ACE3; font-size: 1rem" onclick="speak()">我要发帖</a>&nbsp;&nbsp;&nbsp;
+				            </div>				            
+				        </div>
+				    </section> 						
+				</aside>  -->       
+				<%@ include file="/WEB-INF/jsp/common/right.jsp"%>       
+				<aside id="fb-button" class="span4 page-sidebar" style="margin-top: 1.2rem;">	
+					<section class="widget">
+			            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			            	<tr>
+							    <td style="width:50%; background-color: white;" onclick="speak()">
+									<button class="button-style" style="width: 90%; height: 100%; margin: auto;" onclick="speak()">发表</button>
+								</td>
+								<td style="width:50%; background-color: white;">
+									<button class="button-style" style="width: 90%; height: 100%; float:right" onclick="update()">刷新</button>
+								</td>									
+						    </tr>
+			            </table>
+		    		</section>   
+	    		</aside>	                                    
+	        </div>
+	    </div>
+    </div>    
+    
+    <div id="speak-div"; class="page-container div-shade">
+	    <div class="container div-width">
+		    <div class="row">
+		    	<div class="x" onclick="cancel()"><a href="javascript:void(0)" style="color: #6f7579;">×</a></div> 
+		        <div class="span8 page-content">	
+		            <article class="type-page hentry clearfix">
+		                <h1 class="post-title">
+		                   	<a href="javascript:void(0)" style="font-size: 2rem;">发新帖</a>
+		                </h1>
+		                <hr class="hr-width">
+		            </article>		
+		            <form id="contact-form" class="row" action="#">			                
+		                <div class="span6">
+		                	<input type="text" id="title" class="required input-xlarge" placeholder="输入标题" maxlength="15" style="width: 100%;">
+		                </div>		
+						<div class="span6">
+                        	<textarea id="content" class="required span6" rows="9" style="width: 100%;" placeholder="输入内容"></textarea>
+                        </div>		
+		                <div class="span6 offset2 bm30">		                    
+		                    <a href="javascript:void(0)"><input type="bottom" id="submit" value="立即发表 " class="btn btn-inverse" onclick="deliver()"></a>		                    
+		                </div>		                                       
+		            </form>
+		        </div>		        
+		    </div>
+	    </div>
+    </div>
+    
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>     
+	
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>
+	<script type="text/javascript">
+		function speak() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}
+			//$('#speak-div').addClass('show');
+			window.location.href = baseURL + "/singing/writing";
+		}
+		
+		function cancel() {		
+			$('#speak-div').removeClass('show');
+		}
+		
+		function deliver() {
+		   	
+			var title = $("#title").val();
+			var content = $("#content").val();	
+			
+			content = content.replaceAll("\n", "<br/>");
+			
+			if(title == ''){
+	        	alert("您忘记写标题啦！");
+	        	return false;
+	        }			
+			if(content == ''){
+	        	alert("您忘记填写内容啦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/singing/save',
+	   			data : {title : title, content : content},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("发表成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "login()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+		String.prototype.replaceAll = function(s1,s2){ 
+			return this.replace(new RegExp(s1,"gm"),s2); 
+		} 
+	</script>
+</body>
+</html>

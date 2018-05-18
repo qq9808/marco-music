@@ -1,0 +1,48 @@
+package com.marco.music.service.test;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.test.TestReplyDAO;
+import com.marco.music.model.test.TestReply;
+
+/**
+ * @author Marco
+ * @date 2017年6月2日 下午3:24:43
+ * 测评帖子回复Service.
+ */
+@Service
+@Transactional
+public class TestReplyService {
+
+	@Autowired
+	private TestReplyDAO testReplyDAO;
+	
+	public void save(TestReply testReply) throws Exception {
+		testReplyDAO.save(testReply);
+	}
+	
+	public void update(TestReply testReply) throws Exception {
+		testReplyDAO.update(testReply);
+	}
+	
+	public TestReply get(Integer id) throws Exception {
+		return testReplyDAO.get(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		testReplyDAO.delete(id);
+	}
+	
+	public int countTestReplyByCondition(TestReply testReply) {
+		return testReplyDAO.countTestReplyByCondition(testReply);
+	}
+	
+	public List<Object[]> findTestReplyByIDForPage(Integer id, Integer startRow, Integer fetchSize) throws Exception {
+		return testReplyDAO.findTestReplyByIDForPage(id, startRow, fetchSize);
+	}
+	
+}

@@ -1,0 +1,202 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>用户登录</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/tab.css" /> 
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+	
+	<div class="header-wrapper">
+		<header>
+			<div class="container">	
+			    <div class="logo-container">
+				    <a class="font-size" href="${baseURL}">现音中国</a> 
+				    <span class="tag-line">modernist music in China</span>
+			    </div>
+			    <nav class="main-nav">
+			    <div class="menu-top-menu-container">
+				    <ul id="menu-top-menu" class="clearfix">
+				        <li><a href="${baseURL }">首页</a></li>
+				        <li><a href="${baseURL}/singing/page">原创&翻唱</a></li>
+				        <li><a href="${baseURL}/teaching/page">教学</a></li>
+				        <li><a href="${baseURL}/news/page">资讯</a></li>
+				        <%-- <li><a href="${baseURL}/test/page">测评</a></li> --%>	
+				        <li><a href="${baseURL}/forum/page">论坛</a></li>				        
+				    </ul>
+			    </div>
+			    </nav>
+			</div>
+		</header>
+	</div>
+
+	<div class="search-area-wrapper">
+	    <div class="search-area container div-padding">        
+	        <p class="search-tag-line">
+            	<c:choose>
+            		<c:when test="${empty user.txImg }">
+            			<img id="touxiang" src="${baseURL}/sources/img/touxiang.png" class="default-tx-style" />
+            		</c:when>   
+            		<c:otherwise>
+            			<img id="touxiang" src="${txURL}${user.txImg }" class="tx-style" />
+            		</c:otherwise>
+            	</c:choose>       	
+			</p>	
+			<h3 class="search-header" id="font-size2">${user.nickname }</h3>
+			<p class="search-tag-line"><a href="${baseURL}/upload/touxiang/page" style="color: #ffffff;">上传头像</a></p>
+	    </div>
+	</div>
+	
+	<br><br><br>
+
+    <div>
+	    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+		    <%-- <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div div-img" onclick="openUserDiv()"><img src="${baseURL}/sources/img/grzl.jpg" /></div>
+				</td>
+				<td style="width:20%; background-color: white;">
+					<div class="my-div div-img" onclick="openHistoryDiv()"><img src="${baseURL}/sources/img/wdtz.jpg" /></div>
+				</td>
+				<td style="width:40%; background-color: white;">
+					<div class="my-div div-img"><img src="${baseURL}/sources/img/wdsx.jpg" /></div>
+				</td>
+		    </tr>
+		    <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div div-img" onclick="toFeedbackPage()"><img src="${baseURL}/sources/img/ly.jpg" /></div>
+				</td>
+		    </tr> --%>
+		    <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div div-img" onclick="openUserDiv()">
+						<p class="text-center" style="margin: 10% auto 10%;"><img src="${baseURL}/sources/img/gr.png" /></p>
+						<p class="no-margin text-center" style="font-size: 1.5rem; color: #72ACE3;">个人</p>
+					</div>
+				</td>
+				<td style="width:20%; background-color: white;">
+					<div class="my-div div-img" onclick="openHistoryDiv()">
+						<p class="text-center" style="margin: 10% auto 10%;"><img src="${baseURL}/sources/img/fb.png" /></p>
+						<p class="no-margin text-center" style="font-size: 1.5rem; color: #72ACE3;">发表</p>
+					</div>
+				</td>
+				<td style="width:40%; background-color: white;">
+					<div id="dt-button" class="my-div div-img" onclick="openDT()">
+						<p class="text-center" style="margin: 10% auto 10%;"><img src="${baseURL}/sources/img/dt.png" /></p>
+						<p class="no-margin text-center" style="font-size: 1.5rem; color: #72ACE3;">
+							动态
+							<span id="dt-num" class="dt-num hide">  
+					      		<span id="dt-num-span"></span>  
+					 		</span>
+						</p>						
+					</div>
+				</td>
+		    </tr>
+		    <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div div-img" onclick="toFeedbackPage()">
+						<p class="text-center" style="margin: 10% auto 10%;"><img src="${baseURL}/sources/img/ly.png" /></p>
+						<p class="no-margin text-center" style="font-size: 1.5rem; color: #72ACE3;">留言</p>
+					</div>
+				</td>				
+		    </tr>
+	    </table>	    	     
+	</div>
+	
+	<br><br><br>
+	
+	<%@ include file="/WEB-INF/jsp/userCenter/data.jsp"%>
+	<%@ include file="/WEB-INF/jsp/userCenter/history.jsp"%>
+	<%@ include file="/WEB-INF/jsp/userCenter/dt.jsp"%>
+	  
+	
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>  
+	
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>
+	<%-- <script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery.form.js"></script> --%>
+	<script type="text/javascript">	
+				
+		var prefixURL = location.protocol + "//" + window.location.host;
+		<c:set var="prefixURL" value="prefixURL" />
+		
+		$(function() {
+			var autoClick = window.sessionStorage.getItem("autoClick");
+			if(typeof(autoClick) == "undefined" || autoClick == null || autoClick == "" || autoClick == "null") {
+				console.dir("不需要打开动态");
+			}
+			else if(autoClick == 1) {
+				openDT();
+			}
+		});
+		
+		function openUserDiv() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}
+			$('#user-div').addClass('show');
+		}
+		
+		function cancel() {		
+			$('#user-div').removeClass('show');
+		}
+		
+		function toFeedbackPage() {
+			window.location.href = "${baseURL}/feedback/page";
+		}
+		
+		function save() {
+		   	
+			var nickname = $("#nickname").val();
+			var sex = $("input:radio:checked").val();
+			var phone = $("#phone").val();
+			var email = $("#email").val();
+			var province = $("#province").val();
+			var city = $("#city").val();
+							
+			if(nickname == ''){
+	        	alert("起一个好听的昵称吧!");
+	        	return false;
+	        }			
+			if(email == ''){
+	        	alert("邮箱也是必须要填写的哦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/user/info/save',
+	   			data : {nickname : nickname, sex : sex, phone : phone, email : email, province : province, city : city},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("保存成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "save()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+						
+	</script>   
+</body>
+</html>

@@ -1,0 +1,4 @@
+driverClassName=com.mysql.jdbc.Driver
+url=jdbc:mysql://localhost:3306/marco_music?useUnicode=true&characterEncoding=UTF-8
+username=root
+password=qq13124956239

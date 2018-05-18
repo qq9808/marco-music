@@ -1,0 +1,48 @@
+package com.marco.music.service.notice;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.notice.NoticeDAO;
+import com.marco.music.model.notice.Notice;
+
+/**
+ * @author Marco
+ * @date 2017年7月30日 下午3:26:11
+ * 新的动态Service.
+ */
+@Service
+@Transactional
+public class NoticeService {
+	
+	@Autowired
+	private NoticeDAO noticeDAO;
+	
+	public void save(Notice notice) throws Exception {
+		noticeDAO.save(notice);
+	}
+	
+	public void update(Notice notice) throws Exception {
+		noticeDAO.update(notice);
+	}
+	
+	public Notice get(Integer id) throws Exception {
+		return noticeDAO.get(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		noticeDAO.delete(id);
+	}
+	
+	public List<Notice> findNoticeByUserid(Integer userid) throws Exception {
+		return noticeDAO.findNoticeByUserid(userid);
+	}
+	
+	public List<Object[]> findNoticeBySQL(Integer userid) throws Exception {
+		return noticeDAO.findNoticeBySQL(userid);
+	}
+
+}

@@ -1,0 +1,182 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>现音中国-论坛</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco_src.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+	
+	<link href="${baseURL}/sources/UMEditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="${baseURL}/sources/UMEditor/third-party/jquery.min.js"></script>
+    <script type="text/javascript" src="${baseURL}/sources/UMEditor/third-party/template.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="${baseURL}/sources/UMEditor/umeditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="${baseURL}/sources/UMEditor/umeditor.min.js"></script>
+    <script type="text/javascript" src="${baseURL}/sources/UMEditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+	    <div class="container">
+	        <div class="row">
+	            <div class="span8 main-listing">
+	                <c:forEach items="${list}" var="forum">
+		                <article class="format-standard type-post hentry clearfix">	
+		                    <header class="clearfix">	
+		                        <h3>
+		                        	<c:choose>
+					            		<c:when test="${empty forum[6] }">
+					            			<img id="touxiang" src="${baseURL}/sources/img/touxiang.png" style="width: 2.5rem;; height: 2.5rem;; overflow:hidden; border:0.05rem solid black" />
+					            		</c:when>   
+					            		<c:otherwise>
+					            			<img id="touxiang" src="${prefixURL}${txURL}${forum[6] }" style="width: 2.5rem; height: 2.5rem;; overflow:hidden;" />
+					            		</c:otherwise>
+					            	</c:choose>                                 	
+                                	<a href="${baseURL}/forum/detail?id=${forum[0]}">${forum[1]}</a>
+		                        </h3>	
+	                            <div class="post-meta clearfix">
+	                                <span class="category"><a href="#" style="color: #6f7579;">${forum[5]}</a></span>
+	                                <span class="date"><fmt:formatDate value="${forum[3] }" pattern="yyyy-MM-dd HH:mm" /></span>	                               
+	                                <span class="comments" style="float: right;">${forum[7] } 回复</span>
+	                                <!-- <span class="like-count">0</span> -->
+	                            </div>	
+		                    </header>			                    	
+		                </article> 
+	                </c:forEach>             
+					<script type="text/javascript">
+						var pageURL = baseURL + "/forum/page";
+					</script>                                                             
+                    <%@ include file="/WEB-INF/jsp/common/page.jsp"%> 
+                </div>	              										    
+				<%@ include file="/WEB-INF/jsp/common/right.jsp"%>
+				<aside id="fb-button" class="span4 page-sidebar" style="margin-top: 1.2rem;">	
+					<section class="widget">
+			            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			            	<tr>
+							    <td style="width:50%; background-color: white;" onclick="speak()">
+									<button class="button-style" style="width: 90%; height: 100%; margin: auto;" onclick="speak()">发表</button>
+								</td>
+								<td style="width:50%; background-color: white;">
+									<button class="button-style" style="width: 90%; height: 100%; float:right" onclick="update()">刷新</button>
+								</td>									
+						    </tr>
+			            </table>
+		    		</section>   
+	    		</aside>								                                         
+	        </div>
+	    </div>
+    </div>    
+       
+    <div id="speak-div" class="page-container div-shade">
+	    <div class="x" onclick="cancel()"><a href="javascript:void(0)" style="color: white;" id="x">×</a></div>
+	    <div style="width: 50rem; margin: auto;">    	
+	    	<input type="text" id="title" class="required input-xlarge" placeholder="输入标题" maxlength="15" style="width: 50rem; height: 2rem; box-shadow: 2px 2px 5px #d3d6da;" />
+	    	<script type="text/plain" id="myEditor" style="width: 50rem; height: 20rem; margin: auto;">
+			</script>
+			<button id="deliver" class="deliver" onclick="deliver()">立即发表</button>
+		</div> 
+	</div>
+	  
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>     
+	
+	<script type="text/javascript">
+		
+		//实例化编辑器
+	    var um = UM.getEditor('myEditor', {
+	    	autoHeightEnabled: false
+	    });
+		
+	    var prefixURL = location.protocol + "//" + window.location.host;
+		<c:set var="prefixURL" value="prefixURL" />
+	
+		function speak() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}
+			$('#speak-div').addClass('show');
+		}
+		
+		function update() {
+			window.location.reload();
+		}
+				
+		function cancel() {		
+			$("#title").val("");
+			um.setContent('');
+			$('#speak-div').removeClass('show');
+		}
+		
+		function deliver() {
+		   	
+			var title = $("#title").val();
+			var content = UM.getEditor('myEditor').getContent();	
+						
+			if(title == ''){
+	        	alert("您忘记写标题啦！");
+	        	return false;
+	        }			
+			if(content == ''){
+	        	alert("您忘记填写内容啦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/forum/save',
+	   			data : {title : title, content : content},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("发表成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "deliver()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+		String.prototype.replaceAll = function(s1,s2){ 
+			return this.replace(new RegExp(s1,"gm"),s2); 
+		} 
+		
+		/* $(function () { 
+			var ie6 = document.all; 
+			var dv = $('#fb-button'), st; 
+			dv.attr('otop', dv.offset().top); //存储原来的距离顶部的距离 
+			var lWidth = dv.offset().left;
+			$(window).scroll(function () { 
+				st = Math.max(document.body.scrollTop || document.documentElement.scrollTop); 
+				if (st > parseInt(dv.attr('otop'))) { 
+					if (ie6) {   //IE6不支持fixed属性，所以只能靠设置position为absolute和top实现此效果 
+						dv.css({ position: 'absolute', top: st }); 
+					} 
+					else if(dv.css('position') != 'fixed') {
+						dv.css({ 'position': 'fixed', top: 0, left: lWidth }); 
+					} 					
+				} 
+				else if(dv.css('position') != 'static') {
+					dv.css({ 'position': 'static' }); 
+				}		
+			}); 
+		}); */ 
+	</script>
+</body>
+</html>

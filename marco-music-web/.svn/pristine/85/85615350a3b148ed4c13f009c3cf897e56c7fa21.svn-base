@@ -1,0 +1,109 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>现音中国-首页</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+	    <div class="container">
+	        <div class="row">
+	            <div class="span8 page-content">
+	                <div class="row separator">
+	                    <section class="span4 articles-list">
+	                        <h3>翻唱&原创<span style="font-size: 1rem">（最新）</span></h3>
+	                        <ul class="articles">
+	                            <li class="article-entry standard">
+	                                <h4><a href="single.html">英文版Take me</a></h4>
+	                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+	                                <span class="like-count">66</span>
+	                            </li>		                                                       
+	                        </ul>
+	                    </section>	
+	                    <section class="span4 articles-list">
+	                        <h3>教学<span style="font-size: 1rem">（最新）</span></h3>
+	                        <ul class="articles">
+	                            <li class="article-entry standard">
+	                                <h4><a href="single.html">卡玛d1c黑色吉他九成新学生党低价出</a></h4>
+	                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+	                                <span class="like-count">66</span>
+	                            </li>	                         
+	                        </ul>	                       
+	                    </section>
+	                    <section class="span4 articles-list">
+	                        <h3>资讯<span style="font-size: 1rem">（最新）</span></h3>
+	                        <ul class="articles">
+	                            <li class="article-entry standard">
+	                                <h4><a href="single.html">卡玛d1c黑色吉他九成新学生党低价出</a></h4>
+	                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+	                                <span class="like-count">66</span>
+	                            </li>	                         
+	                        </ul>
+	                    </section>
+	                    <!-- <section class="span4 articles-list">
+	                        <h3>测评<span style="font-size: 1rem">（最新）</span></h3>
+	                        <ul class="articles">
+	                            <li class="article-entry standard">
+	                                <h4><a href="single.html">卡玛d1c黑色吉他九成新学生党低价出</a></h4>
+	                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+	                                <span class="like-count">66</span>
+	                            </li>	                         
+	                        </ul>
+	                    </section> -->
+	                    <section class="span4 articles-list">
+	                        <h3>论坛<span style="font-size: 1rem">（最新）</span></h3>
+	                        <ul class="articles">
+	                            <li class="article-entry standard">
+	                                <h4><a href="single.html">卡玛d1c黑色吉他九成新学生党低价出</a></h4>
+	                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+	                                <span class="like-count">66</span>
+	                            </li>	                         
+	                        </ul>
+	                    </section>
+	                </div>
+	            </div>	
+	            <%@ include file="/WEB-INF/jsp/common/right.jsp"%>                                                 
+	        </div>
+	    </div>
+    </div>
+
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>    
+	
+	<script type="text/javascript">
+		/* $(function() { 
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/forum/save',
+	   			data : {title : title, content : content},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("发表成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "deliver()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		});	 */	
+	</script> 
+</body>
+</html>

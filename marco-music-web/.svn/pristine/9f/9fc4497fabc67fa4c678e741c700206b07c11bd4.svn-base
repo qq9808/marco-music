@@ -1,0 +1,43 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>现音中国-教学</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+	    <div class="container">
+	        <div class="row">
+	            <div class="span8 page-content">		
+                    <article class=" type-post format-standard hentry clearfix">
+	                    <h1 class="post-title"><a href="javascript:void(0)">${teaching.title}</a></h1>
+	                    <div class="post-meta clearfix">
+	                    	<span class="category"><a href="#">现音中国</a></span>
+	                    	<span class="date"><fmt:formatDate value="${teaching.createTime}" pattern="yyyy-MM-dd HH:mm" /></span>	                    	
+	                    </div>	                    
+	                    <%-- <embed src='${teaching.url}' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed> --%>
+	                   	<iframe height=498 width=510 src='http://player.youku.com/embed/XMjc3NDQ3NDI0MA==' frameborder=0 'allowfullscreen'></iframe>
+	                    <p>${teaching.content}</p>
+                    </article>	               
+	            </div>
+	            <%@ include file="/WEB-INF/jsp/common/right.jsp"%>
+	        </div>
+	    </div>
+    </div>
+
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>     	
+</body>
+</html>

@@ -1,0 +1,48 @@
+package com.marco.music.service.teaching;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.marco.music.dao.teaching.TeachingDAO;
+import com.marco.music.model.teaching.Teaching;
+
+/**
+ * @author Marco
+ * @date 2017年6月1日 下午11:01:15
+ * 教学Service.
+ */
+@Service
+@Transactional
+public class TeachingService {
+
+	@Autowired
+	private TeachingDAO teachingDAO;
+	
+	public void save(Teaching teaching) throws Exception {
+		teachingDAO.save(teaching);
+	}
+	
+	public void update(Teaching teaching) throws Exception {
+		teachingDAO.update(teaching);
+	}
+	
+	public Teaching get(Integer id) throws Exception {
+		return teachingDAO.get(id);
+	}
+	
+	public void delete(Integer id) throws Exception {
+		teachingDAO.delete(id);
+	}
+	
+	public int countTeachingByCondition(Teaching teaching) throws Exception {
+		return teachingDAO.countTeachingByCondition(teaching);
+	}
+	
+	public List<Teaching> searchTeachingByCondition(Teaching teaching, Integer startRow, Integer fetchSize) throws Exception {
+		return teachingDAO.searchTeachingByCondition(teaching, startRow, fetchSize);
+	}
+	
+}

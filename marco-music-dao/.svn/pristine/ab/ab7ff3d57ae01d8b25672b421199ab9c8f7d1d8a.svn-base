@@ -1,0 +1,51 @@
+package com.marco.music.dao.news;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.criterion.Order;
+import org.springframework.stereotype.Repository;
+
+import com.marco.music.common.fatherDAO.FatherDAO;
+import com.marco.music.model.news.News;
+
+/**
+ * @author Marco
+ * @date 2017年6月1日 上午10:21:09
+ * 资讯DAO.
+ */
+@Repository
+public class NewsDAO extends FatherDAO {
+
+	@Override
+	protected Class<?> getModelClass() {
+		return News.class;
+	}
+
+	public void save(News news) {
+		super.save(news);
+	}
+	
+	public void update(News news) {
+		super.update(news);
+	}
+	
+	public News get(Integer id) {
+		return (News)super.get(getModelClass(), id);
+	}
+	
+	public void delete(Integer id) {
+		super.deleteById(getModelClass(), id);
+	}
+	
+	public int countNewsByCondition(News news) {
+		return super.count(news);
+	}
+	
+	public List<News> searchNewsByCondition(News news, Integer startRow, Integer fetchSize) {
+		List<Order> orders = new ArrayList<Order>();
+		orders.add(Order.desc("createTime"));
+		return super.serach(news, orders, startRow, fetchSize);
+	}
+	
+}

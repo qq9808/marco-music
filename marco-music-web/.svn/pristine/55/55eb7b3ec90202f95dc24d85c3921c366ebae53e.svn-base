@@ -1,0 +1,158 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>用户登录</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/tab.css" /> 
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+	
+	<div class="header-wrapper">
+		<header>
+			<div class="container">	
+			    <div class="logo-container">
+				    <a href="${baseURL}" style="font-size: 1.5rem;">现音中国</a> 
+				    <span class="tag-line">modernist music in China</span>
+			    </div>
+			    <nav class="main-nav">
+			    <div class="menu-top-menu-container">
+				    <ul id="menu-top-menu" class="clearfix">
+				        <li><a href="${baseURL }">首页</a></li>
+				        <li><a href="${baseURL}/singing/page">原创&翻唱</a></li>
+				        <li><a href="${baseURL}/teaching/page">教学</a></li>
+				        <li><a href="${baseURL}/news/page">资讯</a></li>
+				        <li><a href="${baseURL}/test/page">测评</a></li>	
+				        <li><a href="${baseURL}/forum/page">论坛</a></li>				        
+				    </ul>
+			    </div>
+			    </nav>
+			</div>
+		</header>
+	</div>
+
+	<div class="search-area-wrapper">
+	    <div class="search-area container" style="padding: 3% 0 0;">        
+	        <p class="search-tag-line">
+            	<c:choose>
+            		<c:when test="${empty user.txImg }">
+            			<img id="touxiang" src="${baseURL}/sources/img/touxiang.png" style="width: 6rem; height: 6rem; border-radius:50%; overflow:hidden;" />
+            		</c:when>   
+            		<c:otherwise>
+            			<img id="touxiang" src="${txURL}${user.txImg }" style="width: 6rem; height: 6rem; border-radius:50%; overflow:hidden;" />
+            		</c:otherwise>
+            	</c:choose>       	
+			</p>	
+			<h3 class="search-header" style="font-size: 2rem;">${user.nickname }</h3>
+			<p class="search-tag-line"><a href="${baseURL}/upload/touxiang/page">上传头像</a></p>
+	    </div>
+	</div>
+	
+	<br><br><br>
+
+    <div>
+	    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+		    <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div" style="background:#00ffff; width: 15rem; height: 15rem; margin: auto;" onclick="openUserDiv()"><img src="${baseURL}/sources/img/grzl.jpg" /></div>
+				</td>
+				<td style="width:20%; background-color: white;"">
+					<div class="my-div" style="background:#00ffff; width: 15rem; height: 15rem; margin: auto;" onclick="openHistoryDiv()"><img src="${baseURL}/sources/img/wdtz.jpg" /></div>
+				</td>
+				<td style="width:40%; background-color: white;"">
+					<div class="my-div" style="background:#33CC66; width: 15rem; height: 15rem; margin: auto;"><img src="${baseURL}/sources/img/wdsx.jpg" /></div>
+				</td>
+		    </tr>
+		    <tr>
+			    <td style="width:40%; background-color: white;">
+					<div class="my-div" style="background:#00ffff; width: 15rem; height: 15rem; margin: auto;" onclick="openUserDiv()"><img src="${baseURL}/sources/img/ly.jpg" /></div>
+				</td>
+		    </tr>
+	    </table>
+	</div>
+	
+	<br><br><br>
+	
+	<%@ include file="/WEB-INF/jsp/userCenter/data.jsp"%>
+	<%@ include file="/WEB-INF/jsp/userCenter/history.jsp"%>
+	  
+	
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>  
+	
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery.form.js"></script>
+	<script type="text/javascript">	
+	
+		var prefixURL = location.protocol + "//" + window.location.host;
+		<c:set var="prefixURL" value="prefixURL" />
+		
+		function openUserDiv() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}
+			$('#user-div').addClass('show');
+		}
+		
+		function cancel() {		
+			$('#user-div').removeClass('show');
+		}
+		
+		function save() {
+		   	
+			var nickname = $("#nickname").val();
+			var sex = $("input:radio:checked").val();
+			var phone = $("#phone").val();
+			var email = $("#email").val();
+			var province = $("#province").val();
+			var city = $("#city").val();
+							
+			if(nickname == ''){
+	        	alert("起一个好听的昵称吧!");
+	        	return false;
+	        }			
+			if(email == ''){
+	        	alert("邮箱也是必须要填写的哦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/user/info/save',
+	   			data : {nickname : nickname, sex : sex, phone : phone, email : email, province : province, city : city},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("保存成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "save()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+		
+		function cancel() {		
+			$('#history-div').removeClass('show');
+		}
+		
+	</script>   
+</body>
+</html>

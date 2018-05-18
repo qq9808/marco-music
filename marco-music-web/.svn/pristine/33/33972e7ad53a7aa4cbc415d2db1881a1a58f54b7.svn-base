@@ -1,0 +1,84 @@
+package com.marco.music.controller.teaching;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.marco.music.common.page.Page;
+import com.marco.music.model.teaching.Teaching;
+import com.marco.music.service.teaching.TeachingService;
+
+/**
+ * @author Marco
+ * @date 2017年6月1日 下午11:51:25
+ * 教学Controller.
+ */
+@Controller
+public class TeachingController {
+
+	protected Logger logger = Logger.getLogger(getClass());
+	
+	@Autowired
+	private TeachingService teachingService;
+	
+	/**
+	 * 教学页面
+	 */
+	@RequestMapping("/teaching/page")
+	public String teachingPage(HttpServletRequest request, HttpServletResponse response,
+			Integer curPage) {
+		
+		try {
+			
+			Page page = new Page();
+			
+			if(curPage != null) {
+				page.setCurPage(curPage);
+			}
+			page.setFetchSize(20);
+			
+			Teaching teaching = new Teaching();
+			int count = teachingService.countTeachingByCondition(teaching);
+			page.setAllRecordNum(count);
+			page.setTotalPage(page.getTotalPage());
+			Integer startRow = page.getStartRow();
+			
+			List<Teaching> list = teachingService.searchTeachingByCondition(teaching, startRow, page.getFetchSize());
+			
+			request.setAttribute("page", page);
+			request.setAttribute("list", list);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开教学后台出错", e.fillInStackTrace());
+		}
+		
+		return "/teaching/teaching";
+	}
+	
+	/**
+	 * 资讯详情
+	 */
+	@RequestMapping("/teaching/detail")
+	public String teachingDetail(HttpServletRequest request, HttpServletResponse response,
+			Integer id) {
+		
+		try {
+			Teaching teaching = teachingService.get(id);
+			if(teaching != null) {
+				request.setAttribute("teaching", teaching);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("打开教学详情出错", e.fillInStackTrace());
+		}
+		
+		return "/teaching/teaching_detail";
+	}
+	
+}

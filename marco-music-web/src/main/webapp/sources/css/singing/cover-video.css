@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+@media (max-width: 767px) {
+  body {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}
+.uploadfile {
+	width: 150px; 
+	height: 14px; 
+	vertical-align: top;
+}
+.content-input {
+	width: 50rem !important;
+	height: 20rem !important;
+}
+.title-input {
+	width: 50rem !important;
+	height: 2rem !important;
+} 
+@media (max-width: 767px) {
+	.title-input {
+		width: 100% !important;
+		height: 1.8rem !important;
+		margin-top: 0.4rem; 
+	}
+	.content-input {
+		width: 100% !important;
+		height: 20rem !important;
+		margin-top: 0.4rem; 
+	}
+}

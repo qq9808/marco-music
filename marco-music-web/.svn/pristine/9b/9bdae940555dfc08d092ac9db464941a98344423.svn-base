@@ -1,0 +1,248 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>现音中国-测评</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+
+	<%@ include file="/WEB-INF/jsp/common/menu.jsp"%> 
+
+    <div class="page-container">
+	    <div class="container">
+	        <div class="row">
+	            <div class="span8 page-content">		
+                    <article class=" type-post format-standard hentry clearfix">
+	                    <h1 class="post-title"><a href="javascript:void(0)">${test.title}</a></h1>
+	                    <div class="post-meta clearfix">
+	                    	<span class="category"><a href="#">${test.nickname}</a></span>
+	                    	<span class="date"><fmt:formatDate value="${test.createTime }" pattern="yyyy-MM-dd HH:mm" /></span>	                    	
+	                    	<span class="comments">0 回复</span>
+	                    </div>	                    
+	                    <p>${test.content}</p>
+                    </article>
+	                <section id="comments">	
+	                    <hr><h4 id="comments-title">全部回复</h4><hr>
+	                    <ol class="commentlist">		                       	
+	                        <c:forEach items="${list}" var="testReply">
+		                        <li class="comment even thread-odd thread-alt depth-1" id="li-comment-4" style="padding: 0.2rem;">
+		                            <c:if test="${testReply[1] eq 2}">
+			                            <article id="comment-4" style="background: #E8E8E8;">		
+			                                <div class="comment-meta">
+			                                    <h5 class="author">
+			                                    	<cite class="fn" style="font-weight: normal;">回复 <a href="#" rel="external nofollow" class="url">${testReply[7]}</a> 发表的：</cite>
+			                                    </h5>	                                    	
+			                                </div>	
+			                                <div class="comment-body">
+			                                	<p style="margin: 0;">${testReply[8]}</p>	                                       
+			                                </div>
+			                            </article>
+		                            </c:if>
+		                            <article id="comment-4" style="padding-bottom: 0.2rem;">	
+		                                <a href="#">
+		                                	<img src="${baseURL}/sources/img/touxiang.png" class="avatar avatar-60 photo" height="50" width="50">
+		                                </a>	
+		                                <div class="comment-meta">
+		                                    <h5 class="author">
+		                                    	<cite class="fn"><a href="javascript:void(0)" rel="external nofollow" class="url">${testReply[3]}</a></cite>
+		                                    </h5>
+		                                    <p class="date" style="margin-top: -0.8rem;">
+		                                    	<fmt:formatDate value="${testReply[5]}" pattern="yyyy-MM-dd HH:mm" /> 
+		                                    </p>	
+		                                </div>	
+		                                <div class="comment-body">
+		                                	<p>${testReply[4]}</p>	                                       
+		                                </div>
+		                                <div style="text-align: right;">					                    						                    	
+					                    	<a href="javascript:void(0)" onclick="reply2(${testReply[0]})"><span class="reply">回复</span></a>
+					                    	<a href="javascript:void(0)"><span class="cool">赞</span></a>
+					                    </div>	
+		                            </article>
+		                        </li>
+	                        </c:forEach>    
+	                    </ol>		                            	
+	                </section>
+	            </div>
+	            <aside class="span4 page-sidebar">	
+				    <section class="widget">
+				        <div>
+				            <div style="margin-bottom: 5%;">
+					            <a href="javascript:void(0)" class="title" style="color: #72ACE3; font-size: 1rem" onclick="reply()">回复</a>&nbsp;&nbsp;&nbsp;
+				            </div>				            
+				        </div>
+				    </section> 						
+				</aside>
+	            <%@ include file="/WEB-INF/jsp/common/right.jsp"%>
+	        </div>
+	    </div>
+    </div>
+    
+    <div id="reply-to-forum-div"; class="page-container div-shade">
+	    <div class="container div-width">
+		    <div class="row">
+		    	<div class="x" onclick="cancel()"><a href="javascript:void(0)" style="color: #6f7579;">×</a></div> 
+		        <div class="span8 page-content">	
+		            <article class="type-page hentry clearfix">
+		                <h1 class="post-title">
+		                   	<a href="javascript:void(0)" style="font-size: 2rem;">回复</a>
+		                </h1>
+		                <hr class="hr-width">
+		            </article>		
+		            <form id="contact-form" class="row" action="#">			                
+						<div class="span6">
+                        	<textarea id="content" class="required span6" rows="9" style="width: 100%;" placeholder="输入内容"></textarea>
+                        </div>		
+		                <div class="span6 offset2 bm30">		                    
+		                    <a href="javascript:void(0)"><input type="bottom" id="submit" value="立即回复 " class="btn btn-inverse" onclick="deliver()"></a>		                    
+		                </div>		                                       
+		            </form>
+		        </div>		        
+		    </div>
+	    </div>
+    </div>
+    
+    <div id="reply-to-reply-div"; class="page-container div-shade">
+	    <div class="container div-width">
+		    <div class="row">
+		    	<div class="x" onclick="cancel2()"><a href="javascript:void(0)" style="color: #6f7579;">×</a></div> 
+		        <div class="span8 page-content">	
+		            <article class="type-page hentry clearfix">
+		                <h1 class="post-title">
+		                   	<a href="javascript:void(0)" style="font-size: 2rem;">回复</a>
+		                </h1>
+		                <hr class="hr-width">
+		            </article>		
+		            <form id="contact-form" class="row" action="#">			                
+						<div class="span6">
+                        	<textarea id="content2" class="required span6" rows="9" style="width: 100%;" placeholder="输入内容"></textarea>
+                        </div>		
+		                <div class="span6 offset2 bm30">		                    
+		                    <a href="javascript:void(0)"><input type="bottom" id="submit" value="立即回复 " class="btn btn-inverse" onclick="deliver2()"></a>		                    
+		                </div>		                                       
+		            </form>
+		        </div>		        
+		    </div>
+	    </div>
+    </div>
+
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>
+
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>	     	
+	<script type="text/javascript">
+		
+		var replyID;
+	
+		function reply() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}			
+			$('#reply-to-forum-div').addClass('show');
+		}		
+		
+		function reply2(id) {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				alert("您还未登录呢，请先登录！");
+				return false;
+			}
+			replyID = id;
+			$('#reply-to-reply-div').addClass('show');
+		}
+		
+		function cancel() {		
+			$('#reply-to-forum-div').removeClass('show');
+		}		
+		
+		function cancel2() {		
+			$('#reply-to-reply-div').removeClass('show');
+		}
+		
+		function deliver() {
+		   	
+			var content = $("#content").val();	
+			var level = 1;
+			
+			content = content.replaceAll("\n", "<br/>");
+					
+			if(content == ''){
+	        	alert("您忘记填写内容啦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/test/reply/save',
+	   			data : {testID : "${test.id}", content : content, level : level},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("回复成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "deliver()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+		
+		function deliver2() {
+		   	
+			var content = $("#content2").val();	
+			var level = 2;
+			
+			content = content.replaceAll("\n", "<br/>");
+		
+			if(content == ''){
+	        	alert("您忘记填写内容啦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/test/reply/save',
+	   			data : {testID : "${test.id}", content : content, level : level, replyID : replyID},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					alert("回复成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "deliver2()");
+	   					alert(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+		
+		String.prototype.replaceAll = function(s1,s2){ 
+			return this.replace(new RegExp(s1,"gm"),s2); 
+		}
+	
+	</script>
+</body>
+</html>

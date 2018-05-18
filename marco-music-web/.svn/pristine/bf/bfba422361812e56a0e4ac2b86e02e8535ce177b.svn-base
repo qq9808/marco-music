@@ -1,0 +1,265 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/sources/jstl/jstl.jsp"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>用户登录</title>
+
+	<link rel="shortcut icon" href="${baseURL}/sources/img/xy.jpg" />
+
+	<link rel="stylesheet" href="${baseURL}/sources/css/style.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/tab.css" /> 
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco_src.css" />
+	<link rel="stylesheet" href="${baseURL}/sources/css/marco.html" />	
+</head>
+<body>
+	
+	<div class="header-wrapper">
+		<header>
+			<div class="container">	
+			    <div class="logo-container">
+				    <a class="font-size" href="${baseURL}">现音中国</a> 
+				    <span class="tag-line">modernist music in China</span>
+			    </div>
+			    <nav class="main-nav">
+				    <div class="menu-top-menu-container">
+					    <ul id="menu-top-menu" class="clearfix">
+					        <li><a href="${baseURL }">首页</a></li>
+					        <li><a href="${baseURL}/singing/page">音乐厅</a></li>
+					        <li><a href="${baseURL}/news/page">资讯</a></li>
+					        <li><a href="${baseURL}/news/page">荐读</a></li>
+					        <li><a href="${baseURL}/forum/page">家园</a></li>	
+					        <li><a href="javascript:void(0)" onclick="more()">更多</a></li>				        
+					    </ul>
+				    </div>
+			    </nav>
+			</div>
+		</header>
+	</div>
+
+	<div class="search-area-wrapper">
+	    <div class="search-area container div-padding">        
+	        <p class="search-tag-line">
+            	<c:choose>
+            		<c:when test="${empty user.txImg }">
+            			<img id="touxiang" src="${baseURL}/sources/img/touxiang.png" class="default-tx-style" />
+            		</c:when>   
+            		<c:otherwise>
+            			<img id="touxiang" src="${txURL}${user.txImg }" class="tx-style" />
+            		</c:otherwise>
+            	</c:choose>       	
+			</p>	
+			<h3 class="search-header" id="font-size2" style="font-family: STKaiti;">${user.nickname }</h3>
+			<p class="search-tag-line"><button class="button-style2" onclick="toUploadPage()">上传头像</button></p>
+	    </div>
+	</div>
+		
+	<div id="speak-div" class="page-container">
+    	<div class="container">
+        	<div class="row">
+            	<div class="span12 page-content">	
+                	<div class="row-fluid div-center">
+	                    <div id="out-div1" class="span2 my-width out-div" onclick="chooseDiv('1')">
+	                    	<h4 style="color: #72ACE3; text-decoration: none;">个人</h4>                                 
+	                    </div>
+	                    <div id="out-div2" class="span2 my-width out-div" onclick="chooseDiv('2')">
+	                    	<h4 style="color: #72ACE3; text-decoration: none;">发表</h4>                                  
+	                    </div>
+	                    <div id="out-div3" class="span2 my-width out-div" onclick="toFeedbackPage()">
+	                    	<h4 style="color: #72ACE3; text-decoration: none;">留言</h4>                                
+	                    </div>
+	                    <div id="out-div4" class="span2 my-width out-div" onclick="chooseDiv('4')">
+	                    	<h4 style="color: #72ACE3; text-decoration: none;">动态</h4>                                
+	                    </div>
+                	</div>
+            	</div>
+        	</div>
+    	</div>
+    </div> 
+	
+	<script type="text/javascript" src="${baseURL }/sources/js/jquery/jquery-2.1.1.js"></script>
+	<%@ include file="/WEB-INF/jsp/common/window.jsp"%>  
+	<%@ include file="/WEB-INF/jsp/userCenter/data.jsp"%>
+	<%@ include file="/WEB-INF/jsp/userCenter/history.jsp"%>
+	<%@ include file="/WEB-INF/jsp/userCenter/dt.jsp"%>	  	
+	<%@ include file="/WEB-INF/jsp/common/footer.jsp"%>  
+	
+	<script type="text/javascript">	
+								
+		$(function() {
+			
+			var autoClick = window.sessionStorage.getItem("autoClick");
+			if(typeof(autoClick) == "undefined" || autoClick == null || autoClick == "" || autoClick == "null") {
+				console.dir("不需要打开动态");
+				$('#out-div1').addClass('out-active');
+				$('#in-div1').addClass('in-active');
+			}
+			else if(autoClick == 1) {
+				$('#out-div2').addClass('out-active');
+				$('#in-div2').addClass('in-active');
+			}
+			
+			//历史发帖			
+			$.ajax({
+				type : 'POST',
+				url : '${baseURL}/user/history',
+				data : {id : "${user.id}"},     	
+				dataType : 'json',
+				success : function(result) {
+					
+					if(result.state == 200) { 					
+						
+						html1 = "";
+						html2 = "";
+						
+						for(var i = 0; i < result.singingList.length; i++) {
+							html1 += "<li>" + "<a href='${baseURL}/singing/detail?id=" + result.singingList[i].id + "'>" + result.singingList[i].title + "</a>" + "</li>";
+						}
+						for(var i = 0; i < result.forumList.length; i++){
+							html2 += "<li>" + "<a href='${baseURL}/forum/detail?id=" + result.forumList[i].id + "'>" + result.forumList[i].title + "</a>" + "</li>";
+						}
+												
+						$("#singing_ul").html(html1);
+						$("#forum_ul").html(html2);
+		 		  	}
+					else{	  
+						alert(result.msg);	   					
+		 			}
+				}
+			});
+			
+			//动态
+			$.ajax({
+	 			type : 'POST',
+	 			url : '${baseURL}/notice/find',
+	 			data : {},     	
+	 			dataType : 'json',
+	 			success : function(result) {
+	 				
+	 				if(result.state == 200) { 					
+	 					if(result.many == 0) {
+	 						console.log("没有新的动态");
+	 					}	   	
+	 					else {
+	 						
+	 						console.dir(result);
+	 						 						
+	 						var text = "+" + result.list.length;
+	 						$('#dt-num-span').html(text);
+	 						$('#dt-num').removeClass('hide');
+	 						
+	 						html = "";
+	 						for(var i = 0; i < result.list.length; i++) {
+	 							
+	 							html += "<li>";
+	 							if(result.list[i][1] == 1) {
+	 								html += "<a href='${baseURL}/feedback/page'>" + result.list[i][4] + "给你留言了";
+	 							}
+	 							if(result.list[i][1] == 2) {
+	 								html += "<a href='${baseURL}/singing/detail?id=" + result.list[i][2] + "'>" + '"' + result.list[i][4] + '"' + "评论了" 
+	 										+ "《" + result.list[i][3] + "》";
+	 							}
+	 							if(result.list[i][1] == 3) {
+	 								html += "<a href='${baseURL}/singing/detail?id=" + result.list[i][2] + "'>" + '"' + result.list[i][4] + '"' + "在" 
+	 										+ "《" + result.list[i][3] + "》" + "中回复了你的评论"; 
+	 							}
+								if(result.list[i][1] == 4) {
+									html += "<a href='${baseURL}/forum/detail?id=" + result.list[i][2] + "'>" + '"' + result.list[i][4] + '"' + "评论了" 
+										    + "《" + result.list[i][3] + "》";
+	 							}
+								if(result.list[i][1] == 5) {
+									html += "<a href='${baseURL}/forum/detail?id=" + result.list[i][2] + "'>" + '"' + result.list[i][4] + '"' + "在" 
+										    + "《" + result.list[i][3] + "》" + "中回复了你的评论";
+	 							}
+								html += "</a>";
+								html += "</li>";							
+	 						}
+	 						console.dir(html);
+	 						$('#dt-ul').html(html);
+	 					}
+	 	 		  	}
+	 				else{	  
+	 					console.log("查询动态失败！");  					
+	 	 			}
+	 			}
+	 		});	
+			
+		});
+		
+		function chooseDiv(id) {
+			
+			$('.out-div').removeClass('out-active');
+			$('#out-div' + id).addClass('out-active');
+			
+			$('.in-div').removeClass('in-active');
+			$('#in-div' + id).addClass('in-active');
+		}
+		
+		function openUserDiv() {
+			var user = "${user}";
+			if(typeof(user) == "undefined" || user == null || user == "" || user == "null") {
+				showWindow("您还未登录呢，请先登录！");
+				return false;
+			}
+			$('#user-div').addClass('show');
+		}
+		
+		function cancel() {		
+			$('#user-div').removeClass('show');
+		}
+		
+		function toFeedbackPage() {
+			window.location.href = "${baseURL}/feedback/page";
+		}
+		
+		function toUploadPage() {
+			window.location.href = "${baseURL}/upload/touxiang/page";
+		}
+				
+		function save() {
+		   	
+			var nickname = $("#nickname").val();
+			var sex = $("input:radio:checked").val();
+			var phone = $("#phone").val();
+			var email = $("#email").val();
+			var province = $("#province").val();
+			var city = $("#city").val();
+							
+			if(nickname == ''){
+	        	showWindow("起一个好听的昵称吧!");
+	        	return false;
+	        }			
+			if(email == ''){
+				showWindow("邮箱也是必须要填写的哦！");
+	        	return false;
+	        }
+						
+			$("#submit").removeAttr("onclick");
+			
+			$.ajax({
+	   			type : 'POST',
+	   			url : '${baseURL}/user/info/save',
+	   			data : {nickname : nickname, sex : sex, phone : phone, email : email, province : province, city : city},     	
+	   			dataType : 'json',
+	   			success : function(result) {
+	   				
+	   				if(result.state == 200) { 					
+	   					showWindow("保存成功！");
+	   					setTimeout(function() {
+	   						window.location.reload();
+	   				    },1);	   					
+	   	 		  	}
+	   				else{	  
+	   					$("#submit").attr("onclick", "save()");
+	   					showWindow(result.msg);	   					
+	   	 			}
+	   			}
+	   		});
+		}
+						
+	</script>   
+</body>
+</html>
